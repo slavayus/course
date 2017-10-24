@@ -1,6 +1,14 @@
-const Product = require('./database/DefineProduct');
+const Product = require('./entity/Product');
+let product = new Product;
+
+
 const express = require('express');
 const HotDeals = require('./database/DefineHotDeals');
+const Users = require('./database/DefineUser');
+const Sequelize = require('sequelize');
+
+const Op = Sequelize.Op;
+
 
 const app = express();
 app.listen(3030, function () {
@@ -9,60 +17,197 @@ app.listen(3030, function () {
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //REQUEST AND RESPONS. SERVER LISTENERS
-app.all('/products', function (req, res) {
-    Product.findAll()
-        .then(value => res.send(value));
-});
+//PRODUCT FIND
+app.all('/products', product.getAllProducts);
 
 
 app.all('/product/:id', function (req, res) {
     Product.findById(Number(req.params.id))
-        .then(value => res.send(value));
+        .then((value => {
+            if (value != null) {
+                res.send(value)
+            } else {
+                res.send('Element not found')
+            }
+        }));
+});
+
+app.all('/products/:type', function (req, res) {
+    Product.findAll({
+        where: {
+            type: req.params.type
+        }
+    }).then(value => {
+        if (value.length !== 0) {
+            res.send(value)
+        } else {
+            res.send('No such element')
+        }
+    });
+});
+
+
+app.all('/products/types', function (req, res) {
+    Product.findAll({
+        where: {
+            type: req.params.type
+        }
+    }).then(value => {
+        if (value.length !== 0) {
+            res.send(value)
+        } else {
+            res.send('No such element')
+        }
+    });
+});
+
+app.all('/search/:data', function (req, res) {
+    Product.findAll({
+        where: {
+            name: {[Op.like]: '%' + req.params.data + '%'}
+        }
+    }).then(value => {
+        if (value.length !== 0) {
+            res.send(value)
+        } else {
+            res.send('No such element')
+        }
+    });
+});
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//PRODUCT INSERT
+app.all('/admin/product/insert/:name/:image_min_version/:image_large_version/:description/:price/:type', function (req, res) {
+    Product.create({
+        name: req.params.name,
+        image_min_version: req.params.image_min_version,
+        image_large_version: req.params.image_large_version,
+        description: req.params.description,
+        date_post: new Date(),
+        price: Number(req.params.price),
+        type: req.params.type,
+    }).catch(reason => res.send(reason.message));
+});
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//PRODUCT DELETE
+app.all('/admin/product/delete/element/:id', function (req, res) {
+    Product.findById(Number(req.params.id))
+        .then(task => {
+            if (task !== null) {
+                if (task.destroy()) {
+                    res.send('Row deleted')
+                } else {
+                    res.send('Row doesn\'t deleted')
+                }
+            } else {
+                res.send('No such element')
+            }
+        })
+});
+
+
+app.all('/admin/product/delete/type/:type', function (req, res) {
+    Product.findAll()
+        .then(task => {
+            if (task !== null) {
+                task.forEach(value => value.destroy());
+                res.send('Type deleted')
+            } else {
+                res.send('No such element')
+            }
+        })
+});
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//DELETE USER
+app.all('/admin/user/delete/:id', function (req, res) {
+    Users.findById(Number(req.params.id))
+        .then(task => {
+            if (task !== null) {
+                task.destroy();
+                res.send('User deleted')
+            } else {
+                res.send('User not found')
+            }
+        })
+});
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//SELECT USER
+app.all('/user/:login/:password', function (req, res) {
+    let login = req.params.login;
+    let password = req.params.password;
+
+    Users.findAll({
+        where: {
+            login: login,
+            password: password,
+        }
+    }).then(value => {
+        if (value.length === 0) {
+            res.send("User not found")
+        }
+        res.send(value)
+    });
+});
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//INSERT NEW USER
+app.all('/user/new/:name/:surname/:login/:password/', function (req, res) {
+    Users.create({
+        name: req.params.name,
+        surname: req.params.surname,
+        login: req.params.login,
+        password: req.params.password
+    }).catch(reason => res.send(reason.errno));
 });
 
 
 app.all('/', function (req, res) {
-    Product.findAll()
-        .then(value => res.send(value));
+    HotDeals.findAll()
+        .then(value => {
+            if (value.length === 0) {
+                res.send('No such element')
+            } else {
+                res.send(value)
+            }
+        });
 });
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //INSERT DATA INTO TABLES
 Product.create({
-    name: 'John1',
-    image_min_version: 'ae',
-    image_large_version: 'fe5',
-    description: '2aes',
+    name: 'John9',
+    image_min_version: '4',
+    image_large_version: '4',
+    description: '4',
     date_post: '2017-10-23 18:04:42',
     price: 50,
-    type: '1aesa',
+    type: 'posters',
 }).catch(reason => console.log(1, reason.message));
 
 
 HotDeals.create({
-    image_hot_version: 'dsddsdf',
-    until: '2017-10-23 23:04:42',
+    image_hot_version: 'sddsddsdf',
+    until: '2017-12-23 23:04:42',
+    id_product: 2,
 }).catch(reason => console.log(2, reason.message));
 
 
-// try {
-//     Product.findAll({
-//         where: {
-//             title: 'John1'
-//         }
-//     }).then(value => {
-//         if (value.length===0){
-//             throw new SyntaxError("Мало данных");
-//         }
-//         console.log(value)
-//     });
-//
-// } catch (err) {
-//     console.log(err.name);
-//     //Do nothing
-// }
+Users.create({
+    name: 'John',
+    surname: 'John',
+    login: 'John',
+    password: 'John'
+}).catch(reason => console.log(3, reason.message));
 
 
 /*

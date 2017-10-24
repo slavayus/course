@@ -4,11 +4,11 @@ const DataTypes = require("sequelize");
 
 const connection = new Sequelize('mysql://root:root@localhost:3306/store');
 
-const Product = connection.define('hot_deals', {
+const HotDeals = connection.define('hot_deals', {
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
-            autoIncrement: true
+            autoIncrement: true,
         },
         image_hot_version: {
             type: DataTypes.STRING,
@@ -22,20 +22,25 @@ const Product = connection.define('hot_deals', {
                 isAfter: String(new Date()),
             }
 
+        },
+        id_product: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: 'products',
+                key: "id",
+                onDelete: 'CASCADE'
+            },
+            onDelete: 'CASCADE',
+            allowNull: false
         }
     },
     {
         timestamps: true,
-        createdAt:
-            false,
-        updatedAt:
-            false,
-        deletedAt:
-            false,
-    }
-    )
-;
+        createdAt: false,
+        updatedAt: false,
+        deletedAt: false,
+    });
 
-Product.sync();
+HotDeals.sync();
 
-module.exports = Product;
+module.exports = HotDeals;
