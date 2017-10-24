@@ -5,6 +5,13 @@ const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
 
+/**
+ * Считывает из базы данных все продукты.
+ *
+ * @param req - Запрос от клиента.
+ * @param res - Ответ клиенту.
+ * @version 1.0
+ */
 Product.prototype.getAllProducts = function (req, res) {
     Product.findAll()
         .then(value => {
@@ -17,6 +24,13 @@ Product.prototype.getAllProducts = function (req, res) {
 };
 
 
+/**
+ * Считывает из базы данных продукт по ID.
+ *
+ * @param req - Запрос от клиента.
+ * @param res - Ответ клиенту.
+ * @version 1.0
+ */
 Product.prototype.getProductById = function (req, res) {
     Product.findById(Number(req.params.id))
         .then((value => {
@@ -29,6 +43,13 @@ Product.prototype.getProductById = function (req, res) {
 };
 
 
+/**
+ * Считывает из базы данных все продукты по определенному типу.
+ *
+ * @param req - Запрос от клиента.
+ * @param res - Ответ клиенту.
+ * @version 1.0
+ */
 Product.prototype.getProductsByType = function (req, res) {
     Product.findAll({
         where: {
@@ -43,6 +64,14 @@ Product.prototype.getProductsByType = function (req, res) {
     });
 };
 
+
+/**
+ * Считывает из базы данных все типы продуктов.
+ *
+ * @param req - Запрос от клиента.
+ * @param res - Ответ клиенту.
+ * @version 1.0
+ */
 Product.prototype.getProductsAllTypes = function (req, res) {
     Product.findAll({
         where: {
@@ -57,6 +86,15 @@ Product.prototype.getProductsAllTypes = function (req, res) {
     });
 };
 
+
+/**
+ * Получает в переменной req слово.
+ * Осуществляет поиск этого слова в названии продукта.
+ *
+ * @param req - Запрос от клиента.
+ * @param res - Ответ клиенту.
+ * @version 1.0
+ */
 Product.prototype.searchProducts = function (req, res) {
     Product.findAll({
         where: {
@@ -71,6 +109,14 @@ Product.prototype.searchProducts = function (req, res) {
     });
 };
 
+
+/**
+ * Записывает новый продукт в базу данных.
+ *
+ * @param req - Запрос от клиента.
+ * @param res - Ответ клиенту.
+ * @version 1.0
+ */
 Product.prototype.createProduct = function (req, res) {
     Product.create({
         name: req.params.name,
@@ -83,6 +129,15 @@ Product.prototype.createProduct = function (req, res) {
     }).catch(reason => res.send(reason.message));
 };
 
+
+/**
+ *
+ * Удаляет из базы данных продукт по ID.
+ *
+ * @param req - Запрос от клиента.
+ * @param res - Ответ клиенту.
+ * @version 1.0
+ */
 Product.prototype.deleteProductById = function (req, res) {
     Product.findById(Number(req.params.id))
         .then(task => {
@@ -98,6 +153,14 @@ Product.prototype.deleteProductById = function (req, res) {
         })
 };
 
+
+/**
+ * Удаляет продукты из бд по определенному типу.
+ *
+ * @param req - Запрос от клиента.
+ * @param res - Ответ клиенту.
+ * @version 1.0
+ */
 Product.prototype.deleteProductType = function (req, res) {
     Product.findAll()
         .then(task => {

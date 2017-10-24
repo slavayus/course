@@ -4,6 +4,12 @@ const DataTypes = require("sequelize");
 
 const connection = new Sequelize('mysql://root:root@localhost:3306/store');
 
+/**
+ * Создает представление сущности в бд.
+ * Если сущность отсутствует в базе данных, то она создается там.
+ *
+ * @version 1.0
+ */
 const Product = connection.define('products', {
         id: {
             type: DataTypes.INTEGER,

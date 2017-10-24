@@ -2,6 +2,14 @@
 const User = require('../database/DefineUser');
 
 
+/**
+ * Удаляет из базы данных пользователя по Id.
+ *
+ * @param req - Запрос от клиента.
+ * @param res - Ответ клиенту.
+ * @version 1.0
+ */
+
 User.prototype.delete = function (req, res) {
     User.findById(Number(req.params.id))
         .then(task => {
@@ -14,6 +22,14 @@ User.prototype.delete = function (req, res) {
         })
 };
 
+/**
+ * Проверяет существует ли пользователь в базе или нет.
+ * Необходим для авторизации пользоваетя.
+ *
+ * @param req - Запрос от клиента.
+ * @param res - Ответ клиенту.
+ * @version 1.0
+ */
 User.prototype.checkUser = function (req, res) {
     let login = req.params.login;
     let password = req.params.password;
@@ -31,6 +47,14 @@ User.prototype.checkUser = function (req, res) {
     });
 };
 
+/**
+ * Создает и записывает нового пользователя в базу данных.
+ * Необходим для регистрации новых пользователей.
+ *
+ * @param req - Запрос от клиента.
+ * @param res - Ответ клиенту.
+ * @version 1.0
+ */
 User.prototype.create = function (req, res) {
     User.create({
         name: req.params.name,

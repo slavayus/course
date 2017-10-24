@@ -2,6 +2,13 @@
 const HotDeal = require('../database/DefineHotDeals');
 
 
+/**
+ * Считывает из базы данных все данные.
+ *
+ * @param req - Запрос от клиента.
+ * @param res - Ответ клиенту.
+ * @version 1.0
+ */
 HotDeal.prototype.getAll = function (req, res) {
     HotDeal.findAll()
         .then(value => {
@@ -14,6 +21,13 @@ HotDeal.prototype.getAll = function (req, res) {
 };
 
 
+/**
+ * Записывает новый продукт в базу данных.
+ *
+ * @param req - Запрос от клиента.
+ * @param res - Ответ клиенту.
+ * @version 1.0
+ */
 HotDeal.prototype.create = function (req, res) {
     HotDeal.create({
         image_hot_version: req.params.image,

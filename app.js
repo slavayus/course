@@ -14,10 +14,7 @@ app.listen(3030, function () {
 });
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//PRODUCT
 app.all('/products', product.getAllProducts);
-
 
 app.all('/product/:id', product.getProductById);
 
@@ -34,8 +31,6 @@ app.all('/admin/product/delete/element/:id', product.deleteProductById);
 app.all('/admin/product/delete/type/:type', product.deleteProductType);
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//USER
 app.all('/admin/user/delete/:id', user.delete);
 
 app.all('/user/:login/:password', user.checkUser);
@@ -43,14 +38,10 @@ app.all('/user/:login/:password', user.checkUser);
 app.all('/user/new/:name/:surname/:login/:password/', user.create);
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//HotDeals
 app.all('/', hotDeal.getAll);
 app.all('/admin/hotdeal/add/:image/:until/:id', hotDeal.create);
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//INSERT DATA INTO TABLES
 Product.create({
     name: 'John9',
     image_min_version: '4',
