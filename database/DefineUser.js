@@ -4,7 +4,7 @@ const DataTypes = require("sequelize");
 
 const connection = new Sequelize('mysql://root:root@localhost:3306/store');
 
-const Users = connection.define('users', {
+const User = connection.define('users', {
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
@@ -41,6 +41,6 @@ const Users = connection.define('users', {
     )
 ;
 
-Users.sync();
+User.sync();
 
-module.exports = Users;
+module.exports = User;

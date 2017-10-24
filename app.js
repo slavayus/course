@@ -1,15 +1,13 @@
 const Product = require('./entity/Product');
-let product = new Product;
+const product = new Product;
 
+const User = require('./entity/User');
+const user = new User;
+
+const HotDeal = require('./entity/HotDeals');
+const hotDeal = new HotDeal;
 
 const express = require('express');
-const HotDeals = require('./database/DefineHotDeals');
-const Users = require('./database/DefineUser');
-const Sequelize = require('sequelize');
-
-const Op = Sequelize.Op;
-
-
 const app = express();
 app.listen(3030, function () {
     console.log('App started on 3030 port!');
@@ -17,169 +15,38 @@ app.listen(3030, function () {
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//REQUEST AND RESPONS. SERVER LISTENERS
-//PRODUCT FIND
+//PRODUCT
 app.all('/products', product.getAllProducts);
 
 
-app.all('/product/:id', function (req, res) {
-    Product.findById(Number(req.params.id))
-        .then((value => {
-            if (value != null) {
-                res.send(value)
-            } else {
-                res.send('Element not found')
-            }
-        }));
-});
+app.all('/product/:id', product.getProductById);
 
-app.all('/products/:type', function (req, res) {
-    Product.findAll({
-        where: {
-            type: req.params.type
-        }
-    }).then(value => {
-        if (value.length !== 0) {
-            res.send(value)
-        } else {
-            res.send('No such element')
-        }
-    });
-});
+app.all('/products/:type', product.getProductsByType);
 
+app.all('/products/types', product.getProductsAllTypes);
 
-app.all('/products/types', function (req, res) {
-    Product.findAll({
-        where: {
-            type: req.params.type
-        }
-    }).then(value => {
-        if (value.length !== 0) {
-            res.send(value)
-        } else {
-            res.send('No such element')
-        }
-    });
-});
+app.all('/search/:data', product.searchProducts);
 
-app.all('/search/:data', function (req, res) {
-    Product.findAll({
-        where: {
-            name: {[Op.like]: '%' + req.params.data + '%'}
-        }
-    }).then(value => {
-        if (value.length !== 0) {
-            res.send(value)
-        } else {
-            res.send('No such element')
-        }
-    });
-});
+app.all('/admin/product/insert/:name/:image_min_version/:image_large_version/:description/:price/:type', product.createProduct);
+
+app.all('/admin/product/delete/element/:id', product.deleteProductById);
+
+app.all('/admin/product/delete/type/:type', product.deleteProductType);
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//PRODUCT INSERT
-app.all('/admin/product/insert/:name/:image_min_version/:image_large_version/:description/:price/:type', function (req, res) {
-    Product.create({
-        name: req.params.name,
-        image_min_version: req.params.image_min_version,
-        image_large_version: req.params.image_large_version,
-        description: req.params.description,
-        date_post: new Date(),
-        price: Number(req.params.price),
-        type: req.params.type,
-    }).catch(reason => res.send(reason.message));
-});
+//USER
+app.all('/admin/user/delete/:id', user.delete);
+
+app.all('/user/:login/:password', user.checkUser);
+
+app.all('/user/new/:name/:surname/:login/:password/', user.create);
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//PRODUCT DELETE
-app.all('/admin/product/delete/element/:id', function (req, res) {
-    Product.findById(Number(req.params.id))
-        .then(task => {
-            if (task !== null) {
-                if (task.destroy()) {
-                    res.send('Row deleted')
-                } else {
-                    res.send('Row doesn\'t deleted')
-                }
-            } else {
-                res.send('No such element')
-            }
-        })
-});
-
-
-app.all('/admin/product/delete/type/:type', function (req, res) {
-    Product.findAll()
-        .then(task => {
-            if (task !== null) {
-                task.forEach(value => value.destroy());
-                res.send('Type deleted')
-            } else {
-                res.send('No such element')
-            }
-        })
-});
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//DELETE USER
-app.all('/admin/user/delete/:id', function (req, res) {
-    Users.findById(Number(req.params.id))
-        .then(task => {
-            if (task !== null) {
-                task.destroy();
-                res.send('User deleted')
-            } else {
-                res.send('User not found')
-            }
-        })
-});
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//SELECT USER
-app.all('/user/:login/:password', function (req, res) {
-    let login = req.params.login;
-    let password = req.params.password;
-
-    Users.findAll({
-        where: {
-            login: login,
-            password: password,
-        }
-    }).then(value => {
-        if (value.length === 0) {
-            res.send("User not found")
-        }
-        res.send(value)
-    });
-});
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//INSERT NEW USER
-app.all('/user/new/:name/:surname/:login/:password/', function (req, res) {
-    Users.create({
-        name: req.params.name,
-        surname: req.params.surname,
-        login: req.params.login,
-        password: req.params.password
-    }).catch(reason => res.send(reason.errno));
-});
-
-
-app.all('/', function (req, res) {
-    HotDeals.findAll()
-        .then(value => {
-            if (value.length === 0) {
-                res.send('No such element')
-            } else {
-                res.send(value)
-            }
-        });
-});
+//HotDeals
+app.all('/', hotDeal.getAll);
+app.all('/admin/hotdeal/add/:image/:until/:id', hotDeal.create);
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -195,14 +62,14 @@ Product.create({
 }).catch(reason => console.log(1, reason.message));
 
 
-HotDeals.create({
+HotDeal.create({
     image_hot_version: 'sddsddsdf',
     until: '2017-12-23 23:04:42',
     id_product: 2,
 }).catch(reason => console.log(2, reason.message));
 
 
-Users.create({
+User.create({
     name: 'John',
     surname: 'John',
     login: 'John',

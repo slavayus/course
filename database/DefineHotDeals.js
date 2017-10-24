@@ -4,7 +4,7 @@ const DataTypes = require("sequelize");
 
 const connection = new Sequelize('mysql://root:root@localhost:3306/store');
 
-const HotDeals = connection.define('hot_deals', {
+const HotDeal = connection.define('hot_deals', {
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
@@ -41,6 +41,6 @@ const HotDeals = connection.define('hot_deals', {
         deletedAt: false,
     });
 
-HotDeals.sync();
+HotDeal.sync();
 
-module.exports = HotDeals;
+module.exports = HotDeal;
