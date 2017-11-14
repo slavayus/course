@@ -1,0 +1,11 @@
+{
+  "apiPrefix": "http://localhost:8080",
+  "serverPort": "3030",
+  "database": {
+    "login": "root",
+    "password": "root",
+    "name": "store",
+    "host": "localhost",
+    "port": "3306"
+  }
+}

@@ -1,5 +1,5 @@
 'use strict';
-const Product = require('../database/DefineProduct');
+const Product = require('../entity/DefineProduct');
 
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
@@ -8,17 +8,15 @@ const Op = Sequelize.Op;
 /**
  * Считывает из базы данных все продукты.
  *
- * @param req - Запрос от клиента.
- * @param res - Ответ клиенту.
- * @version 1.0
+ * @version 2.0
  */
-Product.prototype.getAllProducts = function (req, res) {
+Product.prototype.getAllProducts = function () {
     Product.findAll()
         .then(value => {
             if (value.length === 0) {
-                res.send('No such element')
+                return 'No such element';
             } else {
-                res.send(value)
+                return value;
             }
         });
 };
@@ -34,7 +32,7 @@ Product.prototype.getAllProducts = function (req, res) {
 Product.prototype.getProductById = function (req, res) {
     Product.findById(Number(req.params.id))
         .then((value => {
-            if (value != null) {
+            if (value !== null) {
                 res.send(value)
             } else {
                 res.send('Element not found')

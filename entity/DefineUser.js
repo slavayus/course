@@ -2,7 +2,8 @@
 const Sequelize = require('sequelize');
 const DataTypes = require("sequelize");
 
-const connection = new Sequelize('mysql://root:root@localhost:3306/store');
+const config = require('../etc/config.json');
+const connection = new Sequelize(`mysql://${config.database.login}:${config.database.password}@${config.database.host}:${config.database.port}/${config.database.name}`);
 
 
 /**

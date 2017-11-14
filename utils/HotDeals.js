@@ -1,5 +1,5 @@
 'use strict';
-const HotDeal = require('../database/DefineHotDeals');
+const HotDeal = require('../entity/DefineHotDeals');
 
 
 /**

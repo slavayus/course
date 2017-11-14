@@ -1,16 +1,23 @@
-const Product = require('./entity/Product');
+#!/usr/bin/env node
+
+const Product = require('./utils/Product');
 const product = new Product;
 
-const User = require('./entity/User');
+const User = require('./utils/User');
 const user = new User;
 
-const HotDeal = require('./entity/HotDeals');
+const HotDeal = require('./utils/HotDeals');
 const hotDeal = new HotDeal;
+
+const config = require('./etc/config.json');
+
+// import { serverPort } from './etc/config.json';
+
 
 const express = require('express');
 const app = express();
-app.listen(3030, function () {
-    console.log('App started on 3030 port!');
+app.listen(config.serverPort, function () {
+    console.log('App started on ' + config.serverPort + ' port!');
 });
 
 
@@ -66,6 +73,20 @@ User.create({
     login: 'John',
     password: 'John'
 }).catch(reason => console.log(3, reason.message));
+
+
+const amqp = require('amqplib/callback_api');
+
+amqp.connect('amqp://localhost', function (err, conn) {
+    conn.createChannel(function (err, ch) {
+        const q = 'products';
+
+        ch.assertQueue(q, {durable: false});
+
+        ch.sendToQueue(q, new Buffer.from(product.getAllProducts));
+        console.log(" [x] Sent to " + q);
+    });
+});
 
 
 /*
