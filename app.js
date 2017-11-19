@@ -9,25 +9,26 @@ const user = new User;
 const HotDeal = require('./utils/HotDeals');
 const hotDeal = new HotDeal;
 
-const config = require('./etc/config.json');
+const ProductQueues = require('./queues/ProductQueues');
+const productQueues = new ProductQueues;
 
-// import { serverPort } from './etc/config.json';
+const app = require('./connections/ExpressConnection');
 
+const RESPONSE_TO_CLIENT = 'Ваш запрос обрабатывается';
 
-const express = require('express');
-const app = express();
-app.listen(config.serverPort, function () {
-    console.log('App started on ' + config.serverPort + ' port!');
+app.get('/products/:orderId', function (req, res) {
+    res.send(RESPONSE_TO_CLIENT);
+
+    const data = product.getAllProducts._rejectionHandler0.data;
+
+    productQueues.doResponseProducts(req.params.orderId, data);
 });
-
-
-app.all('/products', product.getAllProducts);
 
 app.all('/product/:id', product.getProductById);
 
 app.all('/products/:type', product.getProductsByType);
 
-app.all('/products/types', product.getProductsAllTypes);
+app.get('/products/types', product.getProductsAllTypes);
 
 app.all('/search/:data', product.searchProducts);
 
@@ -49,6 +50,7 @@ app.all('/', hotDeal.getAll);
 app.all('/admin/hotdeal/add/:image/:until/:id', hotDeal.create);
 
 
+/*
 Product.create({
     name: 'John9',
     image_min_version: '4',
@@ -76,17 +78,18 @@ User.create({
 
 
 const amqp = require('amqplib/callback_api');
-
 amqp.connect('amqp://localhost', function (err, conn) {
     conn.createChannel(function (err, ch) {
-        const q = 'products';
+        const q = 'hello';
 
         ch.assertQueue(q, {durable: false});
-
-        ch.sendToQueue(q, new Buffer.from(product.getAllProducts));
-        console.log(" [x] Sent to " + q);
+        console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", q);
+        ch.consume(q, function (msg) {
+            console.log(" [x] Received %s", msg.content.toString());
+        }, {noAck: true});
     });
 });
+*/
 
 
 /*

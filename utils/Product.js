@@ -10,16 +10,25 @@ const Op = Sequelize.Op;
  *
  * @version 2.0
  */
-Product.prototype.getAllProducts = function () {
-    Product.findAll()
-        .then(value => {
-            if (value.length === 0) {
-                return 'No such element';
-            } else {
-                return value;
+Product.prototype.getAllProducts = Product.findAll()
+    .then(value => {
+        if (value.length === 0) {
+            return {
+                status: 'empty',
+                data: 'No such element'
             }
-        });
-};
+        } else {
+            return {
+                status: 'success',
+                data: value
+            };
+        }
+    }).catch(error => {
+        return {
+            status: 'error',
+            data: error
+        }
+    });
 
 
 /**
@@ -71,6 +80,10 @@ Product.prototype.getProductsByType = function (req, res) {
  * @version 1.0
  */
 Product.prototype.getProductsAllTypes = function (req, res) {
+    console.log(req.header());
+    console.log();
+    console.log(res.header());
+
     Product.findAll({
         where: {
             type: req.params.type

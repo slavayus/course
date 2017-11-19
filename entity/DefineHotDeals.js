@@ -1,9 +1,6 @@
 'use strict';
-const Sequelize = require('sequelize');
 const DataTypes = require("sequelize");
-
-const config = require('../etc/config.json');
-const connection = new Sequelize(`mysql://${config.database.login}:${config.database.password}@${config.database.host}:${config.database.port}/${config.database.name}`);
+const connection = require('../connections/DataBaseConnection');
 
 /**
  * Создает представление сущности в бд.
