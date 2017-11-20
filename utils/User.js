@@ -5,63 +5,48 @@ const User = require('../entity/DefineUser');
 /**
  * Удаляет из базы данных пользователя по Id.
  *
- * @param req - Запрос от клиента.
- * @param res - Ответ клиенту.
- * @version 1.0
+ * @param id - ID клиента.
+ * @version 2.0
  */
 
-User.prototype.delete = function (req, res) {
-    User.findById(Number(req.params.id))
-        .then(task => {
-            if (task !== null) {
-                task.destroy();
-                res.send('User deleted')
-            } else {
-                res.send('User not found')
-            }
-        })
+User.prototype.delete = (id) => {
+    return User.destroy({
+        where: {
+            id: id
+        }
+    });
 };
 
 /**
  * Проверяет существует ли пользователь в базе или нет.
  * Необходим для авторизации пользоваетя.
  *
- * @param req - Запрос от клиента.
- * @param res - Ответ клиенту.
- * @version 1.0
+ * @param data - JSON-object. Должен содержать логин пользователя и хэш-код пароля пользователя.
+ * @version 2.0
  */
-User.prototype.checkUser = function (req, res) {
-    let login = req.params.login;
-    let password = req.params.password;
-
-    User.findAll({
+User.prototype.checkUser = function (data) {
+    return User.findAll({
         where: {
-            login: login,
-            password: password,
+            login: data.login,
+            password: data.password,
         }
-    }).then(value => {
-        if (value.length === 0) {
-            res.send("User not found")
-        }
-        res.send(value)
-    });
+    })
 };
 
 /**
  * Создает и записывает нового пользователя в базу данных.
  * Необходим для регистрации новых пользователей.
  *
- * @param req - Запрос от клиента.
- * @param res - Ответ клиенту.
- * @version 1.0
+ * @param data - JSON-object. Доджен содержать основную информацию о новом пользователе (name, surname, login, password).
+ * @version 3.0
  */
-User.prototype.create = function (req, res) {
-    User.create({
-        name: req.params.name,
-        surname: req.params.surname,
-        login: req.params.login,
-        password: req.params.password
-    }).then(value => res.send('Added')).catch(reason => res.send(reason.message));
+User.prototype.create = function (data) {
+    return User.create({
+        name: data.name,
+        surname: data.surname,
+        login: data.login,
+        password: data.password
+    });
 };
 
 
