@@ -44,26 +44,12 @@ Product.prototype.getProductsByType = (type) => {
 /**
  * Считывает из базы данных все типы продуктов.
  *
- * @param req - Запрос от клиента.
- * @param res - Ответ клиенту.
- * @version 1.0
+ * @version 2.0
  */
-Product.prototype.getProductsAllTypes = function (req, res) {
-    console.log(req.header());
-    console.log();
-    console.log(res.header());
-
-    Product.findAll({
-        where: {
-            type: req.params.type
-        }
-    }).then(value => {
-        if (value.length !== 0) {
-            res.send(value)
-        } else {
-            res.send('No such element')
-        }
-    });
+Product.prototype.getProductsAllTypes = () => {
+    return Product.findAll({
+        attributes: ['type']
+    })
 };
 
 
@@ -74,7 +60,7 @@ Product.prototype.getProductsAllTypes = function (req, res) {
  * @param text - Запрос от клиента.
  * @version 2.0
  */
-Product.prototype.searchProducts = function (text) {
+Product.prototype.searchProducts = (text) => {
     return Product.findAll({
         where: {
             name: {[Op.like]: '%' + text + '%'}

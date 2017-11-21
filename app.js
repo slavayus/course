@@ -9,6 +9,7 @@ const productQueues = new (require('./queues/ProductsQueues'));
 const elementQueues = new (require('./queues/ElementQueues'));
 const adminQueue = new (require('./queues/AdminQueue'));
 const registerQueue = new (require('./queues/RegisterQueue'));
+const typeQueue = new (require('./queues/TypeQueue'))
 
 const app = require('./connections/ExpressConnection');
 
@@ -77,6 +78,29 @@ app.get('/products/:type/:orderId', (req, res) => {
         }
     }).catch(error => {
         productQueues.doResponseProducts(req.params.orderId, {
+            status: 'error',
+            data: error
+        });
+    });
+});
+
+app.get('/products/alltypes', (req, res) => {
+    res.send(RESPONSE_TO_CLIENT);
+
+    product.getProductsAllTypes(req.params.type).then(value => {
+        if (value.length === 0) {
+            typeQueue.doResponseType({
+                status: 'empty',
+                data: 'No such element'
+            });
+        } else {
+            typeQueue.doResponseType({
+                status: 'success',
+                data: value
+            });
+        }
+    }).catch(error => {
+        typeQueue.doResponseType({
             status: 'error',
             data: error
         });

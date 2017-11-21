@@ -30,11 +30,12 @@ const Product = connection.define('products', {
             allowNull: false
         },
         description: {
-            type: DataTypes.STRING,
+            type: DataTypes.TEXT,
             allowNull: false
         },
         date_post: {
             type: DataTypes.DATE,
+            defaultValue: new Date(),
             allowNull: false,
         },
         price: {
