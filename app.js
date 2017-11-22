@@ -9,12 +9,25 @@ const productQueues = new (require('./queues/ProductsQueues'));
 const elementQueues = new (require('./queues/ElementQueues'));
 const adminQueue = new (require('./queues/AdminQueue'));
 const registerQueue = new (require('./queues/RegisterQueue'));
-const typeQueue = new (require('./queues/TypeQueue'))
+const typeQueue = new (require('./queues/TypeQueue'));
 
 const app = require('./connections/ExpressConnection');
 
 const RESPONSE_TO_CLIENT = 'Ваш запрос обрабатывается';
 
+/**
+ * Отправляет в очередь все продукты.
+ *
+ * В response запроса уведомляет клиента, что задача получена.
+ *
+ * В очередь products_orderId отправляет JSON-object с результатми работы.
+ * Если не удалось прочитать из бд ни одной строки, то в очередь отправляется JSON-object со статусом 'empty'
+ * и с данными 'No such element'.
+ * Если удалось прочитать данные, то в очедерь отправляется JSON-object со статусом 'success'
+ * и данными из бд.
+ * Если произошла ошибка при получении данных из бд, то в очередь отправляется JSON-object со статусом 'error'
+ * и саму ошибку.
+ */
 app.get('/products/all/:orderId', function (req, res) {
     res.send(RESPONSE_TO_CLIENT);
 
@@ -38,6 +51,20 @@ app.get('/products/all/:orderId', function (req, res) {
     });
 });
 
+
+/**
+ * Отправляет в очередь определенный продукт.
+ *
+ * В response запроса уведомляет клиента, что задача получена.
+ *
+ * В очередь element_orderId отправляет JSON-object с результатми работы.
+ * Если не удалось найти в бд этого продукта, то в очередь отправляется JSON-object со статусом 'empty'
+ * и с данными 'No such element'.
+ * Если удалось прочитать данные, то в очедерь отправляется JSON-object со статусом 'success'
+ * и сам продукт.
+ * Если произошла ошибка при получении продукта из бд, то в очередь отправляется JSON-object со статусом 'error'
+ * и саму ошибку.
+ */
 app.get('/product/:id/:orderId', (req, res) => {
     res.send(RESPONSE_TO_CLIENT);
 
@@ -61,6 +88,20 @@ app.get('/product/:id/:orderId', (req, res) => {
     });
 });
 
+
+/**
+ * Отправляет в очередь продукты определенного типа.
+ *
+ * В response запроса уведомляет клиента, что задача получена.
+ *
+ * В очередь products_orderId отправляет JSON-object с результатми работы.
+ * Если не удалось найти в бд ни одного продукта с таким типом, то в очередь отправляется JSON-object со статусом 'empty'
+ * и с данными 'No such element'.
+ * Если удалось прочитать данные, то в очедерь отправляется JSON-object со статусом 'success'
+ * и сами продукты.
+ * Если произошла ошибка при получении продуктов из бд, то в очередь отправляется JSON-object со статусом 'error'
+ * и саму ошибку.
+ */
 app.get('/products/:type/:orderId', (req, res) => {
     res.send(RESPONSE_TO_CLIENT);
 
@@ -84,6 +125,20 @@ app.get('/products/:type/:orderId', (req, res) => {
     });
 });
 
+
+/**
+ * Отправляет в очередь все типы продуктов, которые имеются в бд.
+ *
+ * В response запроса уведомляет клиента, что задача получена.
+ *
+ * В очередь product_types отправляет JSON-object с результатми работы.
+ * Если не удалось найти в бд такого атрибута, то в очередь отправляется JSON-object со статусом 'empty'
+ * и с данными 'No such element'.
+ * Если удалось прочитать данные, то в очедерь отправляется JSON-object со статусом 'success'
+ * и сами продукты.
+ * Если произошла ошибка при получении атрибута из бд, то в очередь отправляется JSON-object со статусом 'error'
+ * и саму ошибку.
+ */
 app.get('/products/alltypes', (req, res) => {
     res.send(RESPONSE_TO_CLIENT);
 
@@ -107,6 +162,20 @@ app.get('/products/alltypes', (req, res) => {
     });
 });
 
+
+/**
+ * Отправляет в очередь продукты, в названии которых имеется строка, полученная от пользователя.
+ *
+ * В response запроса уведомляет клиента, что задача получена.
+ *
+ * В очередь product_types отправляет JSON-object с результатми работы.
+ * Если не удалось найти в бд ни одного продукта, то в очередь отправляется JSON-object со статусом 'empty'
+ * и с данными 'No such element'.
+ * Если удалось прочитать данные, то в очедерь отправляется JSON-object со статусом 'success'
+ * и сами продукты.
+ * Если произошла ошибка при получении продуктов из бд, то в очередь отправляется JSON-object со статусом 'error'
+ * и сама ошибка.
+ */
 app.get('/search/:text/:orderId', (req, res) => {
     res.send(RESPONSE_TO_CLIENT);
 
@@ -130,6 +199,18 @@ app.get('/search/:text/:orderId', (req, res) => {
     });
 });
 
+
+/**
+ * Записывает в бд продукт, полученный от пользователя.
+ *
+ * В response запроса уведомляет клиента, что задача получена.
+ *
+ * В очередь admin_orderId отправляет JSON-object с результатми работы.
+ * Если не удалось записать в бд продукт, то в очередь отправляется JSON-object со статусом 'error'
+ * и сама ошибка.
+ * Если удалось записать данные, то в очедерь отправляется JSON-object со статусом 'success'
+ * и сам продукт.
+ */
 app.post('/admin/product/:orderId', (req, res) => {
     res.send(RESPONSE_TO_CLIENT);
 
@@ -146,6 +227,18 @@ app.post('/admin/product/:orderId', (req, res) => {
     });
 });
 
+
+/**
+ * Удаляет продукт из бд.
+ *
+ * В response запроса уведомляет клиента, что задача получена.
+ *
+ * В очередь admin_orderId отправляет JSON-object с результатми работы.
+ * Если удалось удалить продукт из бд, то в очедерь отправляется JSON-object со статусом 'success'
+ * и количество удаленных продуктов.
+ * Если произошла ошибка при удалении продукта из бд, то в очередь отправляется JSON-object со статусом 'error'
+ * и сама ошибка.
+ */
 app.delete('/admin/product/:id/:orderId', (req, res) => {
     res.send(RESPONSE_TO_CLIENT);
 
@@ -162,6 +255,18 @@ app.delete('/admin/product/:id/:orderId', (req, res) => {
     })
 });
 
+
+/**
+ * Удаляет продукты из бд по определенному типу.
+ *
+ * В response запроса уведомляет клиента, что задача получена.
+ *
+ * В очередь admin_orderId отправляет JSON-object с результатми работы.
+ * Если удалось удалить продукты из бд, то в очедерь отправляется JSON-object со статусом 'success'
+ * и количество удаленных продуктов.
+ * Если произошла ошибка при удалении продуктов из бд, то в очередь отправляется JSON-object со статусом 'error'
+ * и сама ошибка.
+ */
 app.delete('/admin/product/type/:type/:orderId', (req, res) => {
     res.send(RESPONSE_TO_CLIENT);
 
@@ -178,6 +283,18 @@ app.delete('/admin/product/type/:type/:orderId', (req, res) => {
     })
 });
 
+
+/**
+ * Удаляет пользователя из бд по ID.
+ *
+ * В response запроса уведомляет клиента, что задача получена.
+ *
+ * В очередь admin_orderId отправляет JSON-object с результатми работы.
+ * Если удалось удалить пользователя из бд, то в очедерь отправляется JSON-object со статусом 'success'
+ * и количество удаленных пользователей.
+ * Если произошла ошибка при удалении продуктов из бд, то в очередь отправляется JSON-object со статусом 'error'
+ * и сама ошибка.
+ */
 app.delete('/admin/user/:id/:orderId', (req, res) => {
     res.send(RESPONSE_TO_CLIENT);
 
@@ -194,6 +311,20 @@ app.delete('/admin/user/:id/:orderId', (req, res) => {
     })
 });
 
+
+/**
+ * Проверяет существует ли пользователь с опреденными данными.
+ *
+ * В response запроса уведомляет клиента, что задача получена.
+ *
+ * В очередь register_orderId отправляет JSON-object с результатми работы.
+ * Если в бд существует такой пользователь, то в очередь отправляется JSON-object со статусом 'empty'
+ * и с данными 'No such element'.
+ * Если не удалось найти в бд такого пользователя, то в очедерь отправляется JSON-object со статусом 'success'
+ * и количество найденных пользователей.
+ * Если произошла ошибка при получении пользователя из бд, то в очередь отправляется JSON-object со статусом 'error'
+ * и саму ошибку.
+ */
 app.post('/user/:orderId', (req, res) => {
     res.send(RESPONSE_TO_CLIENT);
 
@@ -217,13 +348,27 @@ app.post('/user/:orderId', (req, res) => {
     });
 });
 
+
+/**
+ * Записывает в бд нового пользователя.
+ *
+ * В response запроса уведомляет клиента, что задача получена.
+ *
+ * В очередь register_orderId отправляет JSON-object с результатми работы.
+ * Если в бд существует такой пользователь, то в очередь отправляется JSON-object со статусом 'fail'
+ * и с данными 'The user is not added'.
+ * Если удалось добавить в бд этого пользователя, то в очедерь отправляется JSON-object со статусом 'success'
+ * и количество добавленных пользователей.
+ * Если произошла ошибка при добавлении пользователя из бд, то в очередь отправляется JSON-object со статусом 'error'
+ * и саму ошибку.
+ */
 app.all('/user/new/:orderId', (req, res) => {
     res.send(RESPONSE_TO_CLIENT);
 
     user.create(req.data).then(value => {
         if (value.length === 0) {
             registerQueue.doResponseRegister(req.params.orderId, {
-                status: 'empty',
+                status: 'fail',
                 data: 'The user is not added'
             })
         } else {
@@ -240,6 +385,20 @@ app.all('/user/new/:orderId', (req, res) => {
     });
 });
 
+
+/**
+ * Отправляет в очередь "горящие" продукты.
+ *
+ * В response запроса уведомляет клиента, что задача получена.
+ *
+ * В очередь products_orderId отправляет JSON-object с результатми работы.
+ * Если не удалось получить из бд ни одного продукта, то в очередь отправляется JSON-object со статусом 'empty'
+ * и с данными 'No such element'.
+ * Если удалось получить данные из бд, то в очедерь отправляется JSON-object со статусом 'success'
+ * и сами продукты.
+ * Если произошла ошибка при получении продкутов из бд, то в очередь отправляется JSON-object со статусом 'error'
+ * и сама ошибка.
+ */
 app.get('/:orderId', (req, res) => {
     res.send(RESPONSE_TO_CLIENT);
 
@@ -263,6 +422,20 @@ app.get('/:orderId', (req, res) => {
     });
 });
 
+
+/**
+ * Запиывает и бд "горящие" продукты.
+ *
+ * В response запроса уведомляет клиента, что задача получена.
+ *
+ * В очередь products_orderId отправляет JSON-object с результатми работы.
+ * Если не удалось записать в бд ни одного продукта, то в очередь отправляется JSON-object со статусом 'empty'
+ * и с данными 'No such element'.
+ * Если удалось записать данные в бд, то в очедерь отправляется JSON-object со статусом 'success'
+ * и коливество добавленных продуктов.
+ * Если произошла ошибка при записи продкутов в бд, то в очередь отправляется JSON-object со статусом 'error'
+ * и сама ошибка.
+ */
 app.post('/admin/hotdeal/:orderId', (req, res) => {
     res.send(RESPONSE_TO_CLIENT);
 
