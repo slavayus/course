@@ -2,10 +2,10 @@
 const amqp = require('amqplib/callback_api');
 
 class TypeQueue {
-    doResponseType(data) {
+    doResponseType(queueId, data) {
         amqp.connect('amqp://localhost', function (err, conn) {
             conn.createChannel(function (err, ch) {
-                const queueName = 'product_types';
+                const queueName = 'product_types_' + queueId;
 
                 ch.assertQueue(queueName, {durable: false, autoDelete: true});
 

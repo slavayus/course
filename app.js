@@ -142,20 +142,20 @@ app.get('/products/:type/:orderId', (req, res) => {
 app.get('/products/alltypes', (req, res) => {
     res.send(RESPONSE_TO_CLIENT);
 
-    product.getProductsAllTypes(req.params.type).then(value => {
+    product.getProductsAllTypes().then(value => {
         if (value.length === 0) {
-            typeQueue.doResponseType({
+            typeQueue.doResponseType(req.query.queueId, {
                 status: 'empty',
                 data: 'No such element'
             });
         } else {
-            typeQueue.doResponseType({
+            typeQueue.doResponseType(req.query.queueId, {
                 status: 'success',
                 data: value
             });
         }
     }).catch(error => {
-        typeQueue.doResponseType({
+        typeQueue.doResponseType(req.query.queueId, {
             status: 'error',
             data: error
         });
