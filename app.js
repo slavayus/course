@@ -28,23 +28,23 @@ const RESPONSE_TO_CLIENT = 'Ваш запрос обрабатывается';
  * Если произошла ошибка при получении данных из бд, то в очередь отправляется JSON-object со статусом 'error'
  * и саму ошибку.
  */
-app.get('/products/all/:orderId', function (req, res) {
+app.get('/products/all', (req, res) => {
     res.send(RESPONSE_TO_CLIENT);
 
     product.getAllProducts().then(value => {
         if (value.length === 0) {
-            productQueues.doResponseProducts(req.params.orderId, {
+            productQueues.doResponseProducts(req.query.queueId, {
                 status: 'empty',
                 data: 'No such element'
             });
         } else {
-            productQueues.doResponseProducts(req.params.orderId, {
+            productQueues.doResponseProducts(req.query.queueId, {
                 status: 'success',
                 data: value
             });
         }
     }).catch(error => {
-        productQueues.doResponseProducts(req.params.orderId, {
+        productQueues.doResponseProducts(req.query.queueId, {
             status: 'error',
             data: error
         });
@@ -102,23 +102,23 @@ app.get('/product/:id/:orderId', (req, res) => {
  * Если произошла ошибка при получении продуктов из бд, то в очередь отправляется JSON-object со статусом 'error'
  * и саму ошибку.
  */
-app.get('/products/:type/:orderId', (req, res) => {
+app.get('/products', (req, res) => {
     res.send(RESPONSE_TO_CLIENT);
 
-    product.getProductsByType(req.params.type).then(value => {
+    product.getProductsByType(req.query.type).then(value => {
         if (value.length === 0) {
-            productQueues.doResponseProducts(req.params.orderId, {
+            productQueues.doResponseProducts(req.query.queueId, {
                 status: 'empty',
                 data: 'No such element'
             });
         } else {
-            productQueues.doResponseProducts(req.params.orderId, {
+            productQueues.doResponseProducts(req.query.queueId, {
                 status: 'success',
                 data: value
             });
         }
     }).catch(error => {
-        productQueues.doResponseProducts(req.params.orderId, {
+        productQueues.doResponseProducts(req.query.queueId, {
             status: 'error',
             data: error
         });

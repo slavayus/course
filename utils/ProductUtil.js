@@ -11,7 +11,9 @@ const Op = Sequelize.Op;
  * @version 2.0
  */
 Product.prototype.getAllProducts = () => {
-    return Product.findAll();
+    return Product.findAll({
+        attributes:['id','name','image_min_version','price']
+    });
 };
 
 
