@@ -12,7 +12,7 @@ const Op = Sequelize.Op;
  */
 Product.prototype.getAllProducts = () => {
     return Product.findAll({
-        attributes:['id','name','image_min_version','price']
+        attributes: ['id', 'name', 'image_min_version', 'price']
     });
 };
 
@@ -36,6 +36,7 @@ Product.prototype.getProductById = (id) => {
  */
 Product.prototype.getProductsByType = (type) => {
     return Product.findAll({
+        attributes: ['id', 'name', 'image_min_version', 'price'],
         where: {
             type: type
         }
