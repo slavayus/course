@@ -65,23 +65,23 @@ app.get('/products/all', (req, res) => {
  * Если произошла ошибка при получении продукта из бд, то в очередь отправляется JSON-object со статусом 'error'
  * и саму ошибку.
  */
-app.get('/product/:id/:orderId', (req, res) => {
+app.get('/product/:id', (req, res) => {
     res.send(RESPONSE_TO_CLIENT);
 
     product.getProductById(req.params.id).then(value => {
         if (value === null) {
-            elementQueues.doResponseElement(req.params.orderId, {
+            elementQueues.doResponseElement(req.query.queueId, {
                 status: 'empty',
                 data: 'No such element'
             });
         } else {
-            elementQueues.doResponseElement(req.params.orderId, {
+            elementQueues.doResponseElement(req.query.queueId, {
                 status: 'success',
                 data: value
             });
         }
     }).catch(error => {
-        elementQueues.doResponseElement(req.params.orderId, {
+        elementQueues.doResponseElement(req.query.queueId, {
             status: 'error',
             data: error
         });
