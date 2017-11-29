@@ -51,7 +51,8 @@ Product.prototype.getProductsByType = (type) => {
  */
 Product.prototype.getProductsAllTypes = () => {
     return Product.findAll({
-        attributes: ['type']
+        attributes: ['type'],
+        group: ['type']
     })
 };
 
