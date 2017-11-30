@@ -176,7 +176,7 @@ app.get('/products/alltypes', (req, res) => {
  * Если произошла ошибка при получении продуктов из бд, то в очередь отправляется JSON-object со статусом 'error'
  * и сама ошибка.
  */
-app.get('/products/search', (req, res) => {
+app.get('/search', (req, res) => {
     res.send(RESPONSE_TO_CLIENT);
 
     product.searchProducts(req.query.text).then(value => {

@@ -66,6 +66,7 @@ Product.prototype.getProductsAllTypes = () => {
  */
 Product.prototype.searchProducts = (text) => {
     return Product.findAll({
+        attributes: ['id', 'name', 'image_min_version', 'price'],
         where: {
             name: {[Op.like]: '%' + text + '%'}
         }
