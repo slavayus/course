@@ -17,7 +17,14 @@ const Product = connection.define('products', {
         name: {
             type: DataTypes.STRING,
             unique: true,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                isLongName(value) {
+                    if (value.length >65) {
+                        throw new Error("Please choose a less name")
+                    }
+                }
+            }
         },
         image_min_version: {
             type: DataTypes.STRING,
@@ -56,10 +63,15 @@ const Product = connection.define('products', {
     },
     {
         timestamps: true,
-        createdAt: false,
-        updatedAt: false,
-        deletedAt: false,
-    });
+        createdAt:
+            false,
+        updatedAt:
+            false,
+        deletedAt:
+            false,
+    }
+    )
+;
 
 Product.sync();
 

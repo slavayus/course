@@ -83,7 +83,7 @@ app.get('/product/:id', (req, res) => {
     }).catch(error => {
         elementQueues.doResponseElement(req.query.queueId, {
             status: 'error',
-            data: error
+            data: error.name
         });
     });
 });
