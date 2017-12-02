@@ -1,9 +1,13 @@
 #!/usr/bin/env node
+const Product = require('./utils/ProductUtil');
+const HotDeal = require('./utils/HotDeals');
 
-const product = new (require('./utils/ProductUtil'));
+HotDeal.belongsTo(Product);
+
+
+const product = new Product;
 const user = new (require('./utils/User'));
-const hotDeal = new (require('./utils/HotDeals'));
-
+const hotDeal = new HotDeal;
 
 const productQueues = new (require('./queues/ProductsQueues'));
 const elementQueues = new (require('./queues/ElementQueues'));
@@ -399,25 +403,26 @@ app.all('/user/new/:orderId', (req, res) => {
  * Если произошла ошибка при получении продкутов из бд, то в очередь отправляется JSON-object со статусом 'error'
  * и сама ошибка.
  */
-app.get('/:orderId', (req, res) => {
+app.get('/', (req, res) => {
     res.send(RESPONSE_TO_CLIENT);
 
     hotDeal.getAll().then(value => {
         if (value.length === 0) {
-            productQueues.doResponseProducts(req.params.orderId, {
+            productQueues.doResponseProducts(req.query.queueId, {
                 status: 'empty',
                 data: 'No such element'
             });
         } else {
-            productQueues.doResponseProducts(req.params.orderId, {
+            productQueues.doResponseProducts(req.query.queueId, {
                 status: 'success',
                 data: value
             });
         }
     }).catch(error => {
-        productQueues.doResponseProducts(req.params.orderId, {
+        console.log(error);
+        productQueues.doResponseProducts(req.query.queueId, {
             status: 'error',
-            data: error
+            data: error.name
         });
     });
 });
@@ -509,3 +514,33 @@ app.use(function(err, req, res, next) {
 
 module.exports = app;
 */
+
+// Product.hasOne(HotDeal, {foreignKey: 'id_product'});
+// Product.associate = function (models) {
+//     models.Product.hasOne(models.HotDeal);
+// };
+
+// Product.associate = function(models) {
+//     models.Product.hasOne(models.HotDeal);
+// };
+
+//
+// HotDeal.associate = function(models) {
+//     models.HotDeal.belongsTo(models.Product,{foreignKey: 'id_product'});
+// };
+
+// HotDeal.associate = function (models) {
+//     models.HotDeal.belongsTo(models.Product, {
+//         onDelete: "CASCADE",
+//         foreignKey: {
+//             allowNull: false
+//         }
+//     });
+// };
+
+
+// Product.hasOne(HotDeal, {foreignKey: 'id_product'});
+// HotDeal.hasOne(Product, {foreignKey: 'id_product'});
+// Product.associate = function (models) {
+//     models.Product.hasOne(models.HotDeal, {as: 'AwayTeam'});
+// };

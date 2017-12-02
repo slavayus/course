@@ -2,6 +2,9 @@
 const DataTypes = require("sequelize");
 const connection = require('../connections/DataBaseConnection');
 
+const until = new Date();
+until.setDate(until.getDate() + 5);
+
 /**
  * Создает представление сущности в бд.
  * Если сущность отсутствует в базе данных, то она создается там.
@@ -21,13 +24,23 @@ const HotDeal = connection.define('hot_deals', {
         },
         until: {
             type: DataTypes.DATE,
-            allowNull: false,
+            defaultValue: until,
             validate: {
                 isAfter: String(new Date()),
             }
-
         },
-        id_product: {
+        old_price: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            validate: {
+                pricePositiveValidate(value) {
+                    if (value <= 0) {
+                        throw new Error('Only positive price are allowed!')
+                    }
+                }
+            }
+        },
+        productId: {
             type: DataTypes.INTEGER,
             references: {
                 model: 'products',
@@ -43,7 +56,8 @@ const HotDeal = connection.define('hot_deals', {
         createdAt: false,
         updatedAt: false,
         deletedAt: false,
-    });
+    }
+);
 
 HotDeal.sync();
 

@@ -20,7 +20,7 @@ const Product = connection.define('products', {
             allowNull: false,
             validate: {
                 isLongName(value) {
-                    if (value.length >65) {
+                    if (value.length > 65) {
                         throw new Error("Please choose a less name")
                     }
                 }
@@ -63,15 +63,11 @@ const Product = connection.define('products', {
     },
     {
         timestamps: true,
-        createdAt:
-            false,
-        updatedAt:
-            false,
-        deletedAt:
-            false,
+        createdAt:false,
+        updatedAt:false,
+        deletedAt:false,
     }
-    )
-;
+);
 
 Product.sync();
 

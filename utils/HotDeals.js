@@ -1,14 +1,21 @@
 'use strict';
 const HotDeal = require('../entity/DefineHotDeals');
+const Product = require('../entity/DefineProduct');
 
 
 /**
- * Считывает из базы данных все данные.
+ * Считывает из базы данных все данные о "горящих" продуктах.
  *
  * @version 2.0
  */
 HotDeal.prototype.getAll = () => {
-    return HotDeal.findAll();
+    return HotDeal.findAll({
+        include: [{
+            model: Product
+        }]
+        // ,
+        // attributes: ['id', 'name', 'image_hot_version', 'price', 'productId', 'old_price']
+    });
 };
 
 
