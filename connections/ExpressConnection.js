@@ -13,4 +13,10 @@ app.listen(config.serverPort, function () {
 app.use(cors());
 app.use(bodyParser.json());
 
+// app.use(bodyParser.urlencoded({ extended: false }));
+
+// routes
+const authRoutes = require('../auth/auth');
+app.use('/auth', authRoutes);
+
 module.exports = app;
