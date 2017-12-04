@@ -75,7 +75,6 @@ function validateLoginForm(payload) {
 }
 
 router.post('/signup', (req, res) => {
-    console.log(req.body.email);
     const validationResult = validateSignupForm(req.body);
     if (!validationResult.success) {
         return res.json({
@@ -89,7 +88,6 @@ router.post('/signup', (req, res) => {
 });
 
 router.post('/login', (req, res) => {
-    console.log(req.body.email);
     const validationResult = validateLoginForm(req.body);
     if (!validationResult.success) {
         return res.json({

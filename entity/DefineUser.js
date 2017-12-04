@@ -36,15 +36,12 @@ const User = connection.define('users', {
     },
     {
         timestamps: true,
-        createdAt:
-            false,
-        updatedAt:
-            false,
-        deletedAt:
-            false,
+        createdAt:false,
+        updatedAt:false,
+        deletedAt:false,
     }
-    )
-;
+);
+
 
 User.sync();
 
