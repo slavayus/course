@@ -94,9 +94,10 @@ router.post('/signup', (req, res) => {
                     name: username,
                     email: email,
                     password: password
+                }).then(value => {
+                    req.session.user = value.id;
+                    return res.json({success: true, data: req.session.user});
                 });
-
-                return res.json({success: true});
             } else {
                 validationResult.errors.email = 'This email already exist';
                 return res.json({
@@ -108,11 +109,7 @@ router.post('/signup', (req, res) => {
         }).catch(error => {
             console.log(error);
         })
-
-
     }
-
-    // return res.status(200).end();
 });
 
 router.post('/login', (req, res) => {
@@ -123,9 +120,26 @@ router.post('/login', (req, res) => {
             message: validationResult.message,
             errors: validationResult.errors
         });
-    }
+    } else {
+        const username = req.body.name;
+        const password = req.body.password;
+        const email = req.body.email;
+        user.checkUser(email).then(value => {
+            if (value === null) {
+                return res.json({
+                    success: false,
+                    message: 'User not found.',
+                    errors: validationResult.errors
+                });
 
-    return res.status(200).end();
+            } else {
+                req.session.user = value.id;
+                return res.json({success: true, data: req.session.user});
+            }
+        }).catch(error => {
+            console.log(error);
+        })
+    }
 });
 
 
