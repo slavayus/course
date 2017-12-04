@@ -1,5 +1,7 @@
 const express = require('express');
 const validator = require('validator');
+const user = new (require('../utils/User'));
+
 
 const router = new express.Router();
 
@@ -82,9 +84,35 @@ router.post('/signup', (req, res) => {
             message: validationResult.message,
             errors: validationResult.errors
         });
+    } else {
+        const username = req.body.name;
+        const password = req.body.password;
+        const email = req.body.email;
+        user.checkUser(email).then(value => {
+            if (value === null) {
+                user.create({
+                    name: username,
+                    email: email,
+                    password: password
+                });
+
+                return res.json({success: true});
+            } else {
+                validationResult.errors.email = 'This email already exist';
+                return res.json({
+                    success: false,
+                    message: 'Check the form for errors.',
+                    errors: validationResult.errors
+                });
+            }
+        }).catch(error => {
+            console.log(error);
+        })
+
+
     }
 
-    return res.status(200).end();
+    // return res.status(200).end();
 });
 
 router.post('/login', (req, res) => {

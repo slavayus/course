@@ -22,13 +22,12 @@ User.prototype.delete = (id) => {
  * Необходим для авторизации пользоваетя.
  *
  * @param data - JSON-object. Должен содержать логин пользователя и хэш-код пароля пользователя.
- * @version 2.0
+ * @version 3.0
  */
-User.prototype.checkUser = function (data) {
-    return User.findAll({
+User.prototype.checkUser = (data) => {
+    return User.findOne({
         where: {
-            login: data.login,
-            password: data.password,
+            email: data,
         }
     })
 };
@@ -43,8 +42,7 @@ User.prototype.checkUser = function (data) {
 User.prototype.create = function (data) {
     return User.create({
         name: data.name,
-        surname: data.surname,
-        login: data.login,
+        email: data.email,
         password: data.password
     });
 };

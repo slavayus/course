@@ -19,14 +19,9 @@ const User = connection.define('users', {
             type: DataTypes.STRING,
             allowNull: false
         },
-        surname: {
+        email: {
             type: DataTypes.STRING,
             allowNull: false,
-        },
-        login: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            unique: true,
         },
         password: {
             type: DataTypes.STRING,
@@ -36,9 +31,9 @@ const User = connection.define('users', {
     },
     {
         timestamps: true,
-        createdAt:false,
-        updatedAt:false,
-        deletedAt:false,
+        createdAt: false,
+        updatedAt: false,
+        deletedAt: false,
     }
 );
 

@@ -20,10 +20,8 @@ const app = require('./connections/ExpressConnection');
 const RESPONSE_TO_CLIENT = 'Ваш запрос обрабатывается';
 
 app.get('/yee', (req, res) => {
-    // console.log(req.headers.cookie);
-    console.log(req.session.numberOfVisit);
-    // console.log(req.headers);
-    console.log(req.sessionID);
+    // console.log(req.session.numberOfVisit);
+    // console.log(req.sessionID);
     req.session.numberOfVisit = req.session.numberOfVisit + 1 || 1;
     console.log(req.session.numberOfVisit);
     if (req.session.numberOfVisit > 7) {
