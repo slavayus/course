@@ -538,6 +538,31 @@ app.post('/order', (req, res) => {
     })
 });
 
+app.post('/login/facebook', (req, res) => {
+
+
+    user.checkUser(`facebook.com/${req.body.facebookId}`).then(value => {
+        if (value === null) {
+            user.create({
+                name: req.body.name,
+                email: 'facebook.com/' + req.body.facebookId,
+                password: req.body.password,
+                salt: '0Auth'
+            }).then(value => {
+                req.session.user = value.id;
+                return res.json({success: true, data: req.session.user});
+            }).catch(error => {
+                console.log(error);
+            });
+        } else {
+            req.session.user = value.id;
+            return res.json({success: true, data: req.session.user});
+        }
+    }).catch(error => {
+        console.log(error);
+    });
+});
+
 /*
 
 var express = require('express');
