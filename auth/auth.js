@@ -1,8 +1,8 @@
 const express = require('express');
 const validator = require('validator');
 const user = new (require('../utils/User'));
-
-
+const crypto = require('crypto');
+const sha1 = require('sha1');
 const router = new express.Router();
 
 /**
@@ -60,11 +60,6 @@ function validateLoginForm(payload) {
         errors.email = 'Please provide your email address.';
     }
 
-    if (!payload || typeof payload.password !== 'string' || payload.password.trim().length === 0) {
-        isFormValid = false;
-        errors.password = 'Please provide your password.';
-    }
-
     if (!isFormValid) {
         message = 'Check the form for errors.';
     }
@@ -75,6 +70,43 @@ function validateLoginForm(payload) {
         errors
     };
 }
+
+router.post('/login', (req, res) => {
+    const validationResult = validateLoginForm(req.body);
+    if (!validationResult.success) {
+        return res.json({
+            success: false,
+            message: validationResult.message,
+            errors: validationResult.errors
+        });
+    } else {
+        const email = req.body.email;
+        user.checkUser(email).then(value => {
+            if (value === null) {
+                return res.json({
+                    success: false,
+                    message: 'User not found.',
+                    errors: validationResult.errors
+                });
+            } else {
+                let protectedPassword = sha1(sha1(value.password) + value.salt);
+                if (protectedPassword === req.body.password) {
+                    req.session.user = value.id;
+                    return res.json({success: true, data: req.session.user});
+                } else {
+                    return res.json({
+                        success: false,
+                        message: '',
+                        errors: {password:'Please provide your password.'}
+                    })
+                }
+            }
+        }).catch(error => {
+            console.log(error);
+        })
+    }
+});
+
 
 router.post('/signup', (req, res) => {
     const validationResult = validateSignupForm(req.body);
@@ -90,10 +122,14 @@ router.post('/signup', (req, res) => {
         const email = req.body.email;
         user.checkUser(email).then(value => {
             if (value === null) {
+                const salt = crypto.randomBytes(48)
+                    .toString('hex')
+                    .slice(0, 48);
                 user.create({
                     name: username,
                     email: email,
-                    password: password
+                    password: password,
+                    salt: salt
                 }).then(value => {
                     req.session.user = value.id;
                     return res.json({success: true, data: req.session.user});
@@ -112,7 +148,7 @@ router.post('/signup', (req, res) => {
     }
 });
 
-router.post('/login', (req, res) => {
+router.post('/login/salt', (req, res) => {
     const validationResult = validateLoginForm(req.body);
     if (!validationResult.success) {
         return res.json({
@@ -121,8 +157,6 @@ router.post('/login', (req, res) => {
             errors: validationResult.errors
         });
     } else {
-        const username = req.body.name;
-        const password = req.body.password;
         const email = req.body.email;
         user.checkUser(email).then(value => {
             if (value === null) {
@@ -131,10 +165,8 @@ router.post('/login', (req, res) => {
                     message: 'User not found.',
                     errors: validationResult.errors
                 });
-
             } else {
-                req.session.user = value.id;
-                return res.json({success: true, data: req.session.user});
+                return res.json({data: value.salt});
             }
         }).catch(error => {
             console.log(error);

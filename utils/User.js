@@ -43,7 +43,8 @@ User.prototype.create = function (data) {
     return User.create({
         name: data.name,
         email: data.email,
-        password: data.password
+        password: data.password,
+        salt: data.salt
     });
 };
 

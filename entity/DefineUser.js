@@ -25,8 +25,11 @@ const User = connection.define('users', {
         },
         password: {
             type: DataTypes.STRING,
-            allowNull:
-                false
+            allowNull: false
+        },
+        salt: {
+            type: DataTypes.STRING,
+            allowNull: false
         }
     },
     {

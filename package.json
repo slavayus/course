@@ -17,6 +17,7 @@
     "mysql2": "^1.4.2",
     "sequelize": "^4.22.6",
     "serve-favicon": "~2.4.5",
+    "sha1": "^1.1.1",
     "validator": "^9.1.2"
   },
   "devDependencies": {
