@@ -2,36 +2,33 @@
 const DataTypes = require("sequelize");
 const connection = require('../connections/DataBaseConnection');
 
+
 /**
  * Создает представление сущности в бд.
  * Если сущность отсутствует в базе данных, то она создается там.
  *
  * @version 1.0
  */
-const Order = connection.define('orders', {
+const Users = connection.define('users', {
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
-            autoIncrement: true,
+            autoIncrement: true
         },
-        usersId: {
-            type: DataTypes.INTEGER,
-            references: {
-                model: 'users',
-                key: "id",
-                onDelete: 'CASCADE'
-            },
-            onDelete: 'CASCADE',
+        name: {
+            type: DataTypes.STRING,
             allowNull: false
         },
-        productId: {
-            type: DataTypes.INTEGER,
-            references: {
-                model: 'products',
-                key: "id",
-                onDelete: 'CASCADE'
-            },
-            onDelete: 'CASCADE',
+        email: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        password: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        salt: {
+            type: DataTypes.STRING,
             allowNull: false
         }
     },
@@ -43,6 +40,7 @@ const Order = connection.define('orders', {
     }
 );
 
-Order.sync();
 
-module.exports = Order;
+Users.sync();
+
+module.exports = Users;

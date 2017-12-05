@@ -1,5 +1,5 @@
 'use strict';
-const User = require('../entity/DefineUser');
+const User = require('../entity/DefineUsers');
 
 
 /**

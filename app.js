@@ -1,19 +1,21 @@
 #!/usr/bin/env node
+const ProductSnapshots = require('./entity/ProductSnapshotsDefine');
 const Product = require('./utils/ProductUtil');
 const HotDeal = require('./utils/HotDeals');
-const User = require('./utils/User');
-const Order = require('./utils/Order');
+const Users = require('./utils/Users');
+const Orders = require('./utils/Orders');
 
 HotDeal.belongsTo(Product);
-Order.belongsTo(Product);
-Order.belongsTo(User);
+Orders.belongsTo(ProductSnapshots);
+Orders.belongsTo(Users);
 
 const product = new Product;
-const user = new User;
+const user = new Users;
 const hotDeal = new HotDeal;
-const order = new Order;
+const order = new Orders;
 
 const productQueues = new (require('./queues/ProductsQueues'));
+const orderQueue = new (require('./queues/OrderQueue'));
 const elementQueues = new (require('./queues/ElementQueues'));
 const adminQueue = new (require('./queues/AdminQueue'));
 const registerQueue = new (require('./queues/RegisterQueue'));
@@ -354,7 +356,7 @@ app.post('/user/:orderId', (req, res) => {
         if (value.length === 0) {
             registerQueue.doResponseRegister(req.params.orderId, {
                 status: 'empty',
-                data: 'User not found'
+                data: 'Users not found'
             })
         } else {
             registerQueue.doResponseRegister(req.params.orderId, {
@@ -482,10 +484,55 @@ app.post('/admin/hotdeal/:orderId', (req, res) => {
     });
 });
 
+
+app.get('/user/orders', (req, res) => {
+    res.send(RESPONSE_TO_CLIENT);
+
+    let userId = req.session.user;
+
+    order.loadOrdersById(userId).then(value => {
+        if (value.length === 0) {
+            orderQueue.doResponseOrders(req.query.queueId, {
+                status: 'empty',
+                data: 'No such element'
+            });
+        } else {
+            orderQueue.doResponseOrders(req.query.queueId, {
+                status: 'success',
+                data: value
+            });
+        }
+    }).catch(error => {
+        orderQueue.doResponseOrders(req.query.queueId, {
+            status: 'error',
+            data: error.name
+        });
+    });
+});
+
+
 app.post('/order', (req, res) => {
     let userId = req.session.user;
-    order.create(req.body, userId).then(() => {
-        res.send('Ваш заказ принят.\nНаш администратор свяжется с вами в ближайщее время.')
+
+    product.getProductById(req.body.productId).then(value => {
+        ProductSnapshots.create({
+            productId: value.id,
+            name: value.name,
+            image_min_version: value.image_min_version,
+            image_large_version: value.image_large_version,
+            description: value.description,
+            date_post: value.date_post,
+            price: value.price,
+            type: value.price
+        }).then(value => {
+            order.create(value.dataValues.id, userId).then(() => {
+                res.send('Ваш заказ принят.\nНаш администратор свяжется с вами в ближайщее время.')
+            }).catch(error => {
+                res.send(`Не удалось оформить заказ.\nКод ошибки: \n${error.name}`);
+            })
+        }).catch(error => {
+            res.send(`Не удалось оформить заказ.\nКод ошибки: \n${error.name}`);
+        })
     }).catch(error => {
         res.send(`Не удалось оформить заказ.\nКод ошибки: \n${error.name}`);
     })

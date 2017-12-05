@@ -1,6 +1,6 @@
 const express = require('express');
 const validator = require('validator');
-const user = new (require('../utils/User'));
+const user = new (require('../utils/Users'));
 const crypto = require('crypto');
 const sha1 = require('sha1');
 const router = new express.Router();
