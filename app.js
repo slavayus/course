@@ -1,13 +1,17 @@
 #!/usr/bin/env node
 const Product = require('./utils/ProductUtil');
 const HotDeal = require('./utils/HotDeals');
+const User = require('./utils/User');
+const Order = require('./utils/Order');
 
 HotDeal.belongsTo(Product);
-
+Order.belongsTo(Product);
+Order.belongsTo(User);
 
 const product = new Product;
-const user = new (require('./utils/User'));
+const user = new User;
 const hotDeal = new HotDeal;
+const order = new Order;
 
 const productQueues = new (require('./queues/ProductsQueues'));
 const elementQueues = new (require('./queues/ElementQueues'));
@@ -478,6 +482,14 @@ app.post('/admin/hotdeal/:orderId', (req, res) => {
     });
 });
 
+app.post('/order', (req, res) => {
+    let userId = req.session.user;
+    order.create(req.body, userId).then(() => {
+        res.send('Ваш заказ принят.\nНаш администратор свяжется с вами в ближайщее время.')
+    }).catch(error => {
+        res.send(`Не удалось оформить заказ.\nКод ошибки: \n${error.name}`);
+    })
+});
 
 /*
 
