@@ -123,5 +123,13 @@ Product.prototype.deleteProductType = (type) => {
     });
 };
 
+Product.prototype.loadProdcutsFromArray = (idArray) => {
+    return Product.findAll({
+        where: {
+            id: idArray
+        }
+    });
+};
+
 
 module.exports = Product;

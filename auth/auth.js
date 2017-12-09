@@ -92,6 +92,7 @@ router.post('/login', (req, res) => {
                 let protectedPassword = sha1(sha1(value.password) + value.salt);
                 if (protectedPassword === req.body.password) {
                     req.session.user = value.id;
+                    req.session.basket = value.basket;
                     return res.json({success: true, data: req.session.user});
                 } else {
                     return res.json({
@@ -132,6 +133,7 @@ router.post('/signup', (req, res) => {
                     salt: salt
                 }).then(value => {
                     req.session.user = value.id;
+                    req.session.basket = value.basket;
                     return res.json({success: true, data: req.session.user});
                 });
             } else {

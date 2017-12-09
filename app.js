@@ -4,6 +4,7 @@ const Product = require('./utils/ProductUtil');
 const HotDeal = require('./utils/HotDeals');
 const Users = require('./utils/Users');
 const Orders = require('./utils/Orders');
+const ProductSnapshot = require('./utils/ProductSnapshot');
 
 HotDeal.belongsTo(Product);
 Orders.belongsTo(ProductSnapshots);
@@ -13,13 +14,16 @@ const product = new Product;
 const user = new Users;
 const hotDeal = new HotDeal;
 const order = new Orders;
+const productSnapshot = new ProductSnapshot;
 
 const productQueues = new (require('./queues/ProductsQueues'));
 const orderQueue = new (require('./queues/OrderQueue'));
 const elementQueues = new (require('./queues/ElementQueues'));
 const adminQueue = new (require('./queues/AdminQueue'));
+const basketQueue = new (require('./queues/BasketQueue'));
 const registerQueue = new (require('./queues/RegisterQueue'));
 const typeQueue = new (require('./queues/TypeQueue'));
+const snapshot = new (require('./queues/Snapshot'));
 
 const app = require('./connections/ExpressConnection');
 
@@ -337,80 +341,6 @@ app.delete('/admin/user/:id/:orderId', (req, res) => {
 
 
 /**
- * Проверяет существует ли пользователь с опреденными данными.
- *
- * В response запроса уведомляет клиента, что задача получена.
- *
- * В очередь register_orderId отправляет JSON-object с результатми работы.
- * Если в бд существует такой пользователь, то в очередь отправляется JSON-object со статусом 'empty'
- * и с данными 'No such element'.
- * Если не удалось найти в бд такого пользователя, то в очедерь отправляется JSON-object со статусом 'success'
- * и количество найденных пользователей.
- * Если произошла ошибка при получении пользователя из бд, то в очередь отправляется JSON-object со статусом 'error'
- * и саму ошибку.
- */
-app.post('/user/:orderId', (req, res) => {
-    res.send(RESPONSE_TO_CLIENT);
-
-    user.checkUser(req.data).then(value => {
-        if (value.length === 0) {
-            registerQueue.doResponseRegister(req.params.orderId, {
-                status: 'empty',
-                data: 'Users not found'
-            })
-        } else {
-            registerQueue.doResponseRegister(req.params.orderId, {
-                status: 'success',
-                data: value
-            })
-        }
-    }).catch(error => {
-        registerQueue.doResponseRegister(req.params.orderId, {
-            status: 'error',
-            data: error
-        });
-    });
-});
-
-
-/**
- * Записывает в бд нового пользователя.
- *
- * В response запроса уведомляет клиента, что задача получена.
- *
- * В очередь register_orderId отправляет JSON-object с результатми работы.
- * Если в бд существует такой пользователь, то в очередь отправляется JSON-object со статусом 'fail'
- * и с данными 'The user is not added'.
- * Если удалось добавить в бд этого пользователя, то в очедерь отправляется JSON-object со статусом 'success'
- * и количество добавленных пользователей.
- * Если произошла ошибка при добавлении пользователя из бд, то в очередь отправляется JSON-object со статусом 'error'
- * и саму ошибку.
- */
-app.all('/user/new/:orderId', (req, res) => {
-    res.send(RESPONSE_TO_CLIENT);
-
-    user.create(req.data).then(value => {
-        if (value.length === 0) {
-            registerQueue.doResponseRegister(req.params.orderId, {
-                status: 'fail',
-                data: 'The user is not added'
-            })
-        } else {
-            registerQueue.doResponseRegister(req.params.orderId, {
-                status: 'success',
-                data: value
-            })
-        }
-    }).catch(error => {
-        registerQueue.doResponseRegister(req.params.orderId, {
-            status: 'error',
-            data: error
-        });
-    });
-});
-
-
-/**
  * Отправляет в очередь "горящие" продукты.
  *
  * В response запроса уведомляет клиента, что задача получена.
@@ -511,6 +441,56 @@ app.get('/user/orders', (req, res) => {
 });
 
 
+app.post('/user/basket', (req, res) => {
+    res.send(RESPONSE_TO_CLIENT);
+
+    let userBasket = req.body.basket;
+    req.session.basket = userBasket;
+
+    product.loadProdcutsFromArray(userBasket).then(value => {
+        if (value.length === 0) {
+            basketQueue.doResponseElement(req.query.queueId, {
+                status: 'empty',
+                data: 'No such element'
+            });
+        } else {
+            basketQueue.doResponseElement(req.query.queueId, {
+                status: 'success',
+                data: value
+            });
+        }
+    }).catch(error => {
+        basketQueue.doResponseElement(req.query.queueId, {
+            status: 'error',
+            data: error.name
+        });
+    });
+});
+
+
+app.get('/snapshot/:id', (req, res) => {
+    res.send(RESPONSE_TO_CLIENT);
+
+    productSnapshot.loadSnapshotById(req.params.id).then(value => {
+        if (value === null) {
+            snapshot.doResponseElement(req.query.queueId, {
+                status: 'empty',
+                data: 'No such element'
+            });
+        } else {
+            snapshot.doResponseElement(req.query.queueId, {
+                status: 'success',
+                data: value
+            });
+        }
+    }).catch(error => {
+        snapshot.doResponseElement(req.query.queueId, {
+            status: 'error',
+            data: error.name
+        });
+    });
+});
+
 app.post('/order', (req, res) => {
     let userId = req.session.user;
 
@@ -523,7 +503,7 @@ app.post('/order', (req, res) => {
             description: value.description,
             date_post: value.date_post,
             price: value.price,
-            type: value.price
+            type: value.type
         }).then(value => {
             order.create(value.dataValues.id, userId).then(() => {
                 res.send('Ваш заказ принят.\nНаш администратор свяжется с вами в ближайщее время.')
@@ -539,8 +519,6 @@ app.post('/order', (req, res) => {
 });
 
 app.post('/login/facebook', (req, res) => {
-
-
     user.checkUser(`facebook.com/${req.body.facebookId}`).then(value => {
         if (value === null) {
             user.create({
@@ -550,9 +528,10 @@ app.post('/login/facebook', (req, res) => {
                 salt: '0Auth'
             }).then(value => {
                 req.session.user = value.id;
+                req.session.basket = value.basket;
                 return res.json({success: true, data: req.session.user});
             }).catch(error => {
-                console.log(error);
+                // console.log(error);
             });
         } else {
             req.session.user = value.id;
