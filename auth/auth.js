@@ -19,21 +19,21 @@ function validateSignupForm(payload) {
 
     if (!payload || typeof payload.email !== 'string' || !validator.isEmail(payload.email)) {
         isFormValid = false;
-        errors.email = 'Please provide a correct email address.';
+        errors.email = 'Проверьте ваш email адрес.';
     }
 
     if (!payload || typeof payload.password !== 'string' || payload.password.trim().length < 8) {
         isFormValid = false;
-        errors.password = 'Password must have at least 8 characters.';
+        errors.password = 'Пароль должен содержать больше 8 символов.';
     }
 
     if (!payload || typeof payload.name !== 'string' || payload.name.trim().length === 0) {
         isFormValid = false;
-        errors.name = 'Please provide your name.';
+        errors.name = 'Проверьте ваше имя.';
     }
 
     if (!isFormValid) {
-        message = 'Check the form for errors.';
+        message = 'Проверьте форму на ошибки.';
     }
 
     return {
@@ -57,11 +57,11 @@ function validateLoginForm(payload) {
 
     if (!payload || typeof payload.email !== 'string' || payload.email.trim().length === 0) {
         isFormValid = false;
-        errors.email = 'Please provide your email address.';
+        errors.email = 'Проверьте ваш email адрес.';
     }
 
     if (!isFormValid) {
-        message = 'Check the form for errors.';
+        message = 'Проверьте форму на ошибки.';
     }
 
     return {
@@ -85,7 +85,7 @@ router.post('/login', (req, res) => {
             if (value === null) {
                 return res.json({
                     success: false,
-                    message: 'User not found.',
+                    message: 'Пользователь не найден.',
                     errors: validationResult.errors
                 });
             } else {
@@ -97,7 +97,7 @@ router.post('/login', (req, res) => {
                     return res.json({
                         success: false,
                         message: '',
-                        errors: {password:'Please provide your password.'}
+                        errors: {password:'Проверьте ваш пароль.'}
                     })
                 }
             }
@@ -135,10 +135,10 @@ router.post('/signup', (req, res) => {
                     return res.json({success: true, data: req.session.user});
                 });
             } else {
-                validationResult.errors.email = 'This email already exist';
+                validationResult.errors.email = 'Этот email уже существует';
                 return res.json({
                     success: false,
-                    message: 'Check the form for errors.',
+                    message: 'Проверьте форму на ошибки.',
                     errors: validationResult.errors
                 });
             }
@@ -162,7 +162,7 @@ router.post('/login/salt', (req, res) => {
             if (value === null) {
                 return res.json({
                     success: false,
-                    message: 'User not found.',
+                    message: 'Пользователь не найден.',
                     errors: validationResult.errors
                 });
             } else {
