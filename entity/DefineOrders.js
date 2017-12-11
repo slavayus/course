@@ -24,6 +24,10 @@ const Orders = connection.define('orders', {
             onDelete: 'CASCADE',
             allowNull: false
         },
+        sent: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
+        },
         productsSnapshotId: {
             type: DataTypes.INTEGER,
             references: {

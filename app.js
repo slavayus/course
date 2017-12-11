@@ -239,20 +239,34 @@ app.get('/search', (req, res) => {
  * Если удалось записать данные, то в очедерь отправляется JSON-object со статусом 'success'
  * и сам продукт.
  */
-app.post('/admin/product/:orderId', (req, res) => {
+app.get('/admin/orders', (req, res) => {
     res.send(RESPONSE_TO_CLIENT);
 
-    product.createProduct(req.body).then(value => {
-        adminQueue.doResponseAdmin(req.params.orderId, {
-            status: 'success',
-            data: value
-        }).catch(error => {
-            adminQueue.doResponseAdmin(req.params.orderId, {
-                status: 'error',
-                data: error
+    order.getNotSentOrders().then(value => {
+        if (value.length === 0) {
+            adminQueue.doResponseAdmin(req.query.queueId, {
+                status: 'empty',
+                data: 'No such element'
             });
+        } else {
+            adminQueue.doResponseAdmin(req.query.queueId, {
+                status: 'success',
+                data: value
+            });
+        }
+    }).catch(error => {
+        adminQueue.doResponseAdmin(req.query.queueId, {
+            status: 'error',
+            data: error
         });
     });
+});
+
+
+app.get('/admin/orders/sent', (req, res) => {
+    res.send(RESPONSE_TO_CLIENT);
+
+    order.setSent(req.query.orderId);
 });
 
 
