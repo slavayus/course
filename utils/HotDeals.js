@@ -22,14 +22,16 @@ HotDeal.prototype.getAll = () => {
 /**
  * Записывает новый продукт в базу данных.
  *
- * @param data - данные о продукте для записи в бд(image, until, id).
+ * @param id
+ * @param oldPrice
+ * @param image
  * @version 1.0
  */
-HotDeal.prototype.create = (data) => {
+HotDeal.prototype.create = (id, oldPrice, image) => {
     return HotDeal.create({
-        image_hot_version: data.image,
-        until: data.until,
-        id_product: data.id,
+        image_hot_version: image,
+        productId: id,
+        old_price: oldPrice,
     });
 };
 

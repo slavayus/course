@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+const Busboy = require('busboy');
+const fs = require('fs');
+
 const ProductSnapshots = require('./entity/ProductSnapshotsDefine');
 const Product = require('./utils/ProductUtil');
 const HotDeal = require('./utils/HotDeals');
@@ -281,19 +284,12 @@ app.get('/admin/orders/sent', (req, res) => {
  * Если произошла ошибка при удалении продукта из бд, то в очередь отправляется JSON-object со статусом 'error'
  * и сама ошибка.
  */
-app.delete('/admin/product/:id/:orderId', (req, res) => {
-    res.send(RESPONSE_TO_CLIENT);
-
-    product.deleteProductById(req.params.id).then(value => {
-        adminQueue.doResponseAdmin(req.params.orderId, {
-            status: 'success',
-            data: value
-        });
+app.delete('/admin/product/delete', (req, res) => {
+    product.deleteProductById(req.query.productId).then(value => {
+        const message = value === 0 ? 'Продукт не удалось удалить.' : 'Продукт удален.';
+        res.send(message);
     }).catch(error => {
-        adminQueue.doResponseAdmin(req.params.orderId, {
-            status: 'error',
-            data: error
-        });
+        res.send(`Ошибочка вышала: ${error.name}`);
     })
 });
 
@@ -391,6 +387,7 @@ app.get('/', (req, res) => {
     });
 });
 
+let fileName = '';
 
 /**
  * Запиывает и бд "горящие" продукты.
@@ -405,27 +402,42 @@ app.get('/', (req, res) => {
  * Если произошла ошибка при записи продкутов в бд, то в очередь отправляется JSON-object со статусом 'error'
  * и сама ошибка.
  */
-app.post('/admin/hotdeal/:orderId', (req, res) => {
-    res.send(RESPONSE_TO_CLIENT);
-
-    hotDeal.create(req.data).then(value => {
-        if (value.length === 0) {
-            productQueues.doResponseProducts(req.params.orderId, {
-                status: 'empty',
-                data: 'No such element'
-            });
-        } else {
-            productQueues.doResponseProducts(req.params.orderId, {
-                status: 'success',
-                data: value
-            });
-        }
+app.post('/admin/product/addHot', (req, res) => {
+    console.log(req.body);
+    product.getProductById(req.body.productId).then(value => {
+        const price = value.price;
+        console.log(price);
+        product.updatePriceById(req.body.hotPrice, req.body.productId).then(value2 => {
+            hotDeal.create(req.body.productId, price, fileName).then(value3 => {
+                console.log(price);
+                const message = value3 === 0 ? 'Продукт не удалось удалить.' : 'Продукт удален.';
+                res.send(message);
+            }).catch(error => {
+                res.send(`Ошибочка вышала: ${error.name}`);
+            })
+        }).catch(error => {
+            res.send(`Ошибочка вышала: ${error.name}`);
+        })
     }).catch(error => {
-        productQueues.doResponseProducts(req.params.orderId, {
-            status: 'error',
-            data: error
-        });
+        res.send(`Ошибочка вышала: ${error.name}`);
     });
+});
+
+
+app.post('/admin/upload', (req, res) => {
+    const busboy = new Busboy({headers: req.headers});
+    busboy.on('file', function (fieldname, file, filename) {
+        let saveTo = '/home/slavik/Dropbox/itmo/2course/pip/курсач/second/front/src/hot/img/' + filename;
+        file.pipe(fs.createWriteStream(saveTo));
+        fileName = filename;
+    });
+    busboy.on('finish', function () {
+        res.end('done');
+    });
+    res.on('close', function () {
+        req.unpipe(busboy);
+    });
+    req.pipe(busboy);
 });
 
 

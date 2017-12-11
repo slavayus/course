@@ -17,6 +17,13 @@ Product.prototype.getAllProducts = () => {
 };
 
 
+Product.prototype.updatePriceById = (newPrice, productId) => {
+    return Product.update(
+        {price: Number(newPrice)},
+        {where: {id: Number(productId)}});
+};
+
+
 /**
  * Считывает из базы данных продукт по ID.
  *
