@@ -137,6 +137,7 @@ router.post('/product/update/description', (req, res) => {
  * Если произошла ошибка при удалении продуктов из бд, то в очередь отправляется JSON-object со статусом 'error'
  * и сама ошибка.
  */
+/*
 router.delete('/user/:id/:orderId', (req, res) => {
     res.send(RESPONSE_TO_CLIENT);
 
@@ -152,6 +153,7 @@ router.delete('/user/:id/:orderId', (req, res) => {
         });
     })
 });
+*/
 
 let fileName = '';
 
@@ -180,13 +182,13 @@ router.post('/product/addHot', (req, res) => {
                 fileName = '';
                 res.send(message);
             }).catch(error => {
-                res.send(`Ошибочка вышала: ${error.name}`);
+                res.send(`Ошибочка вышла: ${error.name}`);
             })
         }).catch(error => {
-            res.send(`Ошибочка вышала: ${error.name}`);
+            res.send(`Ошибочка вышла: ${error.name}`);
         })
     }).catch(error => {
-        res.send(`Ошибочка вышала: ${error.name}`);
+        res.send(`Ошибочка вышла: ${error.name}`);
     });
 });
 
@@ -222,6 +224,73 @@ router.post('/upload', (req, res) => {
         req.unpipe(busboy);
     });
     req.pipe(busboy);
+});
+
+let imageMin = '';
+let imageMax = '';
+
+router.post('/product/new', (req, res) => {
+    console.log("YEE");
+    if (imageMin === '' || imageMax === '') {
+        return res.send('Выберите файлы.');
+    }
+
+    product.createProduct(req.body, imageMin, imageMax).then(value => {
+        const message = value === 0 ? 'Продукт не удалось добавить.' : 'Продукт добавлен.';
+        imageMin = '';
+        imageMax = '';
+        res.send(message);
+    }).catch(error => {
+        res.send(`Ошибочка вышла: ${error.name}`);
+    });
+});
+
+router.post('/product/image/min', (req, res) => {
+    console.log("YEE@");
+    const busboy = new Busboy({headers: req.headers});
+    busboy.on('file', function (fieldname, file, filename) {
+        let saveTo = '/home/slavik/Dropbox/itmo/2course/pip/курсач/second/front/src/product/img/' + filename;
+        file.pipe(fs.createWriteStream(saveTo));
+        imageMin = filename;
+    });
+    busboy.on('finish', function () {
+        res.end('done');
+    });
+    res.on('close', function () {
+        req.unpipe(busboy);
+    });
+    req.pipe(busboy);
+});
+
+router.post('/product/image/max', (req, res) => {
+    const busboy = new Busboy({headers: req.headers});
+    busboy.on('file', function (fieldname, file, filename) {
+        let saveTo = '/home/slavik/Dropbox/itmo/2course/pip/курсач/second/front/src/one/img/' + filename;
+        file.pipe(fs.createWriteStream(saveTo));
+        imageMax = filename;
+    });
+    busboy.on('finish', function () {
+        res.end('done');
+    });
+    res.on('close', function () {
+        req.unpipe(busboy);
+    });
+    req.pipe(busboy);
+});
+
+router.get('/isAdmin', (req, res) => {
+    const userId = req.session.user;
+    if (userId !== undefined) {
+        user.isThisAdmin(userId).then(value => {
+            if (value.dataValues.isAdmin) {
+                res.send("Yes");
+            } else {
+                res.send("Permission denied");
+            }
+        });
+    } else {
+        res.send("Permission denied");
+    }
 });
 
 module.exports = router;

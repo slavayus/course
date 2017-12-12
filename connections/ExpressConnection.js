@@ -43,19 +43,6 @@ const authRoutes = require('../auth/auth');
 app.use('/auth', authRoutes);
 
 const adminRoutes = require('../admin/admin');
-app.use('/admin', function (req, res, next) {
-    const userId = req.session.user;
-    if (userId !== undefined) {
-        user.isThisAdmin(userId).then(value => {
-            if (value.dataValues.isAdmin) {
-                next();
-            } else {
-                res.send("Permission denied");
-            }
-        });
-    } else {
-        res.send("Permission denied");
-    }
-}, adminRoutes);
+app.use('/admin', adminRoutes);
 
 module.exports = app;

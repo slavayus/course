@@ -99,11 +99,11 @@ Product.prototype.searchProducts = (text) => {
  * @param data - Данные о новом продукте.
  * @version 2.0
  */
-Product.prototype.createProduct = (data) => {
+Product.prototype.createProduct = (data, imageMin, imageMax) => {
     return Product.create({
         name: data.name,
-        image_min_version: data.image_min_version,
-        image_large_version: data.image_large_version,
+        image_min_version: imageMin,
+        image_large_version: imageMax,
         description: data.description,
         date_post: new Date(),
         price: Number(data.price),
