@@ -87,8 +87,6 @@ router.delete('/product/delete', (req, res) => {
     })
 });
 
-
-
 /**
  * Удаляет продукты из бд по определенному типу.
  *
@@ -176,7 +174,7 @@ router.post('/product/addHot', (req, res) => {
     }
     product.getProductById(req.body.productId).then(value => {
         const price = value.price;
-        product.updatePriceById(req.body.hotPrice, req.body.productId).then(value2 => {
+        product.updatePriceById(req.body.hotPrice, req.body.productId).then(() => {
             hotDeal.create(req.body.productId, price, fileName).then(value3 => {
                 const message = value3 === 0 ? 'Продукт не удалось добавить.' : 'Продукт добавлен.';
                 fileName = '';
@@ -190,6 +188,24 @@ router.post('/product/addHot', (req, res) => {
     }).catch(error => {
         res.send(`Ошибочка вышала: ${error.name}`);
     });
+});
+
+
+router.delete('/product/deleteHot', (req, res) => {
+    hotDeal.getOldPrice(req.query.productId).then(value => {
+        product.updatePriceById(value.dataValues.old_price, req.query.productId).then(() => {
+            hotDeal.removeHotById(value.dataValues.id).then(value3 => {
+                const message = value3 === 0 ? 'Акцию не удалось удалить.' : 'Акция удалена.';
+                res.send(message);
+            }).catch(error => {
+                res.send(`Ошибочка вышала: ${error.name}`);
+            })
+        }).catch(error => {
+            res.send(`Ошибочка вышала: ${error.name}`);
+        });
+    }).catch(error => {
+        res.send(`Ошибочка вышала: ${error.name}`);
+    })
 });
 
 router.post('/upload', (req, res) => {

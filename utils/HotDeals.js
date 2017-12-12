@@ -35,4 +35,19 @@ HotDeal.prototype.create = (id, oldPrice, image) => {
     });
 };
 
+HotDeal.prototype.getOldPrice = (id) => {
+    return HotDeal.findOne(
+        {where: {productId: id}},
+        {attributes: ['id', 'old_price']});
+};
+
+
+HotDeal.prototype.removeHotById = (id) => {
+    return HotDeal.destroy({
+        where: {
+            id: Number(id)
+        }
+    });
+};
+
 module.exports = HotDeal;
