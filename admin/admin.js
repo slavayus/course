@@ -87,6 +87,15 @@ router.delete('/product/delete', (req, res) => {
     })
 });
 
+router.delete('/product/type/delete', (req, res) => {
+    product.deleteProductByType(req.query.type).then(value => {
+        const message = value === 0 ? 'не удалось удалить раздел.' : 'Рзадел удален.';
+        res.send(message);
+    }).catch(error => {
+        res.send(`Ошибочка вышла: ${error.name}`);
+    })
+});
+
 /**
  * Удаляет продукты из бд по определенному типу.
  *

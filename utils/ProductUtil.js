@@ -53,11 +53,10 @@ Product.prototype.getProductById = (id) => {
  * @param type - Тип продукта.
  * @version 2.0
  */
-Product.prototype.getProductsByType = (type) => {
-    return Product.findAll({
-        attributes: ['id', 'name', 'image_min_version', 'price'],
+Product.prototype.deleteProductByType = (productType) => {
+    return Product.destroy({
         where: {
-            type: type
+            type: productType
         }
     });
 };
