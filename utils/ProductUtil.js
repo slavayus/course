@@ -23,6 +23,18 @@ Product.prototype.updatePriceById = (newPrice, productId) => {
         {where: {id: Number(productId)}});
 };
 
+Product.prototype.updateNameById = (newName, productId) => {
+    return Product.update(
+        {name: newName},
+        {where: {id: Number(productId)}});
+};
+
+Product.prototype.updateDescriptionById = (newDescription, productId) => {
+    return Product.update(
+        {description: newDescription},
+        {where: {id: Number(productId)}});
+};
+
 
 /**
  * Считывает из базы данных продукт по ID.

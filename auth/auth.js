@@ -98,7 +98,7 @@ router.post('/login', (req, res) => {
                     return res.json({
                         success: false,
                         message: '',
-                        errors: {password:'Проверьте ваш пароль.'}
+                        errors: {password: 'Проверьте ваш пароль.'}
                     })
                 }
             }
@@ -130,7 +130,8 @@ router.post('/signup', (req, res) => {
                     name: username,
                     email: email,
                     password: password,
-                    salt: salt
+                    salt: salt,
+                    isAdmin: false
                 }).then(value => {
                     req.session.user = value.id;
                     req.session.basket = value.basket;

@@ -30,6 +30,11 @@ const Users = connection.define('users', {
         salt: {
             type: DataTypes.STRING,
             allowNull: false
+        },
+        isAdmin: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
+            allowNull: false
         }
     },
     {

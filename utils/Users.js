@@ -32,6 +32,12 @@ User.prototype.checkUser = (data) => {
     })
 };
 
+User.prototype.isThisAdmin = (data) => {
+    return User.findById(Number(data), {
+        attributes: ['isAdmin']
+    })
+};
+
 /**
  * Создает и записывает нового пользователя в базу данных.
  * Необходим для регистрации новых пользователей.

@@ -6,6 +6,8 @@ const cors = require('cors');
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
+const Users = require('../utils/Users');
+const user = new Users;
 
 app.use(cors({credentials: true, origin: 'http://localhost:3000'}));
 app.use(bodyParser.json());
@@ -39,5 +41,21 @@ app.use(session({
 // routes
 const authRoutes = require('../auth/auth');
 app.use('/auth', authRoutes);
+
+const adminRoutes = require('../admin/admin');
+app.use('/admin', function (req, res, next) {
+    const userId = req.session.user;
+    if (userId !== undefined) {
+        user.isThisAdmin(userId).then(value => {
+            if (value.dataValues.isAdmin) {
+                next();
+            } else {
+                res.send("Permission denied");
+            }
+        });
+    } else {
+        res.send("Permission denied");
+    }
+}, adminRoutes);
 
 module.exports = app;
