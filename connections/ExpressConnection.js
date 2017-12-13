@@ -6,16 +6,13 @@ const cors = require('cors');
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
-const Users = require('../utils/Users');
-const user = new Users;
-
-app.use(cors({credentials: true, origin: 'http://localhost:3000'}));
+app.use(cors({credentials: true, origin: `${config.clientHost}:${config.clientPort}`}));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
 
 const MySQLStore = require('express-mysql-session')(session);
-app.listen(config.serverPort, function () {
+app.listen(config.serverPort, '192.168.1.34', function () {
     console.log('App started on ' + config.serverPort + ' port!');
 });
 

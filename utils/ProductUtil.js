@@ -53,6 +53,21 @@ Product.prototype.getProductById = (id) => {
  * @param type - Тип продукта.
  * @version 2.0
  */
+Product.prototype.getProductsByType = (type) => {
+    return Product.findAll({
+        attributes: ['id', 'name', 'image_min_version', 'price'],
+        where: {
+            type: type
+        }
+    });
+};
+
+/**
+ * Удаляет продукты из бд по определенному типу.
+ *
+ * @version 2.0
+ * @param productType
+ */
 Product.prototype.deleteProductByType = (productType) => {
     return Product.destroy({
         where: {
@@ -96,6 +111,8 @@ Product.prototype.searchProducts = (text) => {
  * Записывает новый продукт в базу данных.
  *
  * @param data - Данные о новом продукте.
+ * @param imageMin
+ * @param imageMax
  * @version 2.0
  */
 Product.prototype.createProduct = (data, imageMin, imageMax) => {
@@ -122,21 +139,6 @@ Product.prototype.deleteProductById = (id) => {
     return Product.destroy({
         where: {
             id: Number(id)
-        }
-    });
-};
-
-
-/**
- * Удаляет продукты из бд по определенному типу.
- *
- * @param type - Тип удаляемого продукта.
- * @version 2.0
- */
-Product.prototype.deleteProductType = (type) => {
-    return Product.destroy({
-        where: {
-            type: type
         }
     });
 };

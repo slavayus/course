@@ -1,9 +1,10 @@
 'use strict';
 const amqp = require('amqplib/callback_api');
+const config = require('../etc/config.json');
 
 class ProductsQueues {
     doResponseProducts(orderId, data) {
-        amqp.connect('amqp://localhost', function (err, conn) {
+        amqp.connect(config.amqp_host, function (err, conn) {
             conn.createChannel(function (err, ch) {
                 const queueName = 'products_' + orderId;
 

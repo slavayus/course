@@ -1,8 +1,9 @@
 {
-  "amqp_host": "amqp://localhost'",
-  "apiPrefix": "http://localhost:8080",
+  "amqp_host": "amqp://test:test@192.168.1.34/",
+  "apiPrefix": "http://192.168.1.34:8080",
   "serverPort": "3030",
-  "jwtSecret": "a secret phrase!!",
+  "clientPort": "3000",
+  "clientHost": "http://192.168.1.34",
   "session": {
     "secret": "YEE",
     "key": "sid",
