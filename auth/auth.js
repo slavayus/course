@@ -89,8 +89,7 @@ router.post('/login', (req, res) => {
                     errors: validationResult.errors
                 });
             } else {
-                let protectedPassword = sha1(sha1(value.password) + value.salt);
-                if (protectedPassword === req.body.password) {
+                if (value.password === req.body.password) {
                     req.session.user = value.id;
                     req.session.basket = value.basket;
                     return res.json({success: true, data: req.session.user});
@@ -126,10 +125,11 @@ router.post('/signup', (req, res) => {
                 const salt = crypto.randomBytes(48)
                     .toString('hex')
                     .slice(0, 48);
+                let protectedPassword = sha1(sha1(password) + salt);
                 user.create({
                     name: username,
                     email: email,
-                    password: password,
+                    password: protectedPassword,
                     salt: salt,
                     isAdmin: false
                 }).then(value => {
