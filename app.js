@@ -367,6 +367,36 @@ app.post('/order', (req, res) => {
     })
 });
 
+app.post('/order/basket', (req, res) => {
+    res.send('Ваш заказ принят.\nНаш администратор свяжется с вами в ближайщее время.');
+    let userId = req.session.user;
+
+    req.body.productsId.forEach(v => {
+        product.getProductById(v).then(value => {
+            ProductSnapshots.create({
+                productId: value.id,
+                name: value.name,
+                image_min_version: value.image_min_version,
+                image_large_version: value.image_large_version,
+                description: value.description,
+                date_post: value.date_post,
+                price: value.price,
+                type: value.type
+            }).then(value2 => {
+                order.create(value2.dataValues.id, userId).then((value3) => {
+                    console.log(`Ваш заказ на товар №${value.id} принят.\nНаш администратор свяжется с вами в ближайщее время.`)
+                }).catch(error => {
+                    console.log(`Не удалось оформить заказ на товар №${value.id}.\nКод ошибки: \n${error.name}`);
+                })
+            }).catch(error => {
+                console.log(`Не удалось оформить заказ на товар №${value.id}.\nКод ошибки: \n${error.name}`);
+            })
+        }).catch(error => {
+            console.log(`Не удалось оформить заказ на товар №${value.id}.\nКод ошибки: \n${error.name}`);
+        })
+    });
+});
+
 app.post('/login/facebook', (req, res) => {
     user.checkUser(`facebook.com/${req.body.facebookId}`).then(value => {
         if (value === null) {
