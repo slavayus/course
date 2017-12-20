@@ -345,30 +345,67 @@ app.get('/snapshot/:id', (req, res) => {
 });
 
 app.post('/order', (req, res) => {
+    res.send(RESPONSE_TO_CLIENT);
+
     let userId = req.session.user;
 
-    product.getProductById(req.body.productId).then(value => {
-        ProductSnapshots.create({
-            productId: value.id,
-            name: value.name,
-            image_min_version: value.image_min_version,
-            image_large_version: value.image_large_version,
-            description: value.description,
-            date_post: value.date_post,
-            price: value.price,
-            type: value.type
-        }).then(value => {
-            order.create(value.dataValues.id, userId).then(() => {
-                res.send('Ваш заказ принят.\nНаш администратор свяжется с вами в ближайщее время.')
+    const code = crypto.randomBytes(6)
+        .toString('hex')
+        .slice(0, 6);
+
+    user.setOrderCode(code, userId).then(() => {
+        nodemailer.createTestAccount((err, account) => {
+            let transporter = nodemailer.createTransport({
+                host: config.mail.host,
+                port: Number(config.mail.port),
+                secure: config.mail.secure,
+                auth: {
+                    user: config.mail.login,
+                    pass: config.mail.password
+                }
+            });
+
+            user.getUser(userId).then(value => {
+                let mailOptions = {
+                    from: `Mr. Robot <${config.mail.login}>`,
+                    to: value.email,
+                    subject: 'Подтвердите покупку продуктов на Mr.Robot-store',
+                    text: `Введите этот код в поле ввода для подтверждения покупки.\n${value.orderCode}`
+                };
+
+                transporter.sendMail(mailOptions, (error, info) => {
+                    if (error) {
+                        return console.log(error);
+                    }
+                    console.log('Message sent: %s', info.messageId);
+                    console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+                });
+            })
+        });
+
+        product.getProductById(req.body.productId).then(value => {
+            ProductSnapshots.create({
+                productId: value.id,
+                name: value.name,
+                image_min_version: value.image_min_version,
+                image_large_version: value.image_large_version,
+                description: value.description,
+                date_post: value.date_post,
+                price: value.price,
+                type: value.type
+            }).then(value => {
+                order.create(value.dataValues.id, userId).then(() => {
+                    console.log('Ваш заказ принят.\nНаш администратор свяжется с вами в ближайщее время.')
+                }).catch(error => {
+                    res.send(`Не удалось оформить заказ.\nКод ошибки: \n${error.name}`);
+                })
             }).catch(error => {
-                res.send(`Не удалось оформить заказ.\nКод ошибки: \n${error.name}`);
+                console.log(`Не удалось оформить заказ.\nКод ошибки: \n${error.name}`);
             })
         }).catch(error => {
-            res.send(`Не удалось оформить заказ.\nКод ошибки: \n${error.name}`);
+            console.log(`Не удалось оформить заказ.\nКод ошибки: \n${error.name}`);
         })
-    }).catch(error => {
-        res.send(`Не удалось оформить заказ.\nКод ошибки: \n${error.name}`);
-    })
+    });
 });
 
 
