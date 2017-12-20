@@ -246,7 +246,11 @@ app.get('/search', (req, res) => {
 app.get('/', (req, res) => {
     res.send(RESPONSE_TO_CLIENT);
 
+    let size = req.query.size;
+
     hotDeal.getAll().then(value => {
+        let isEnd = value.length <= size;
+        value = value.slice(0, size);
         if (value.length === 0) {
             productQueues.doResponseProducts(req.query.queueId, {
                 status: 'empty',
@@ -255,7 +259,8 @@ app.get('/', (req, res) => {
         } else {
             productQueues.doResponseProducts(req.query.queueId, {
                 status: 'success',
-                data: value
+                data: value,
+                end: isEnd
             });
         }
     }).catch(error => {
@@ -300,7 +305,7 @@ app.post('/user/basket', (req, res) => {
     let userBasket = req.body.basket;
     req.session.basket = userBasket;
 
-    product.loadProdcutsFromArray(userBasket).then(value => {
+    product.loadProductsFromArray(userBasket).then(value => {
         if (value.length === 0) {
             basketQueue.doResponseElement(req.query.queueId, {
                 status: 'empty',

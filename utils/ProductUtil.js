@@ -143,7 +143,7 @@ Product.prototype.deleteProductById = (id) => {
     });
 };
 
-Product.prototype.loadProdcutsFromArray = (idArray) => {
+Product.prototype.loadProductsFromArray = (idArray) => {
     return Product.findAll({
         where: {
             id: idArray

@@ -8,14 +8,10 @@ const Product = require('../entity/DefineProduct');
  *
  * @version 2.0
  */
-HotDeal.prototype.getAll = () => {
-    return HotDeal.findAll({
-        include: [{
-            model: Product
-        }]
-        // ,
-        // attributes: ['id', 'name', 'image_hot_version', 'price', 'productId', 'old_price']
-    });
+HotDeal.prototype.getAll = (size) => {
+    return HotDeal.findAll(
+        {include: [{model: Product}]}
+    );
 };
 
 
