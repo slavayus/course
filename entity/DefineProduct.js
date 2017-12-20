@@ -63,9 +63,9 @@ const Product = connection.define('products', {
     },
     {
         timestamps: true,
-        createdAt:false,
-        updatedAt:false,
-        deletedAt:false,
+        createdAt: false,
+        updatedAt: false,
+        deletedAt: false,
     }
 );
 

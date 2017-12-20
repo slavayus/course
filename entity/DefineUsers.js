@@ -35,6 +35,9 @@ const Users = connection.define('users', {
             type: DataTypes.BOOLEAN,
             defaultValue: false,
             allowNull: false
+        },
+        orderCode: {
+            type: DataTypes.STRING
         }
     },
     {

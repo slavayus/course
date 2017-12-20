@@ -54,5 +54,15 @@ User.prototype.create = function (data) {
     });
 };
 
+User.prototype.setOrderCode = function (code, userId) {
+    return User.update(
+        {orderCode: code},
+        {where: {id: userId}});
+};
+
+User.prototype.getUser = function (userId) {
+    return User.findById(userId);
+};
+
 
 module.exports = User;
