@@ -38,6 +38,10 @@ const Users = connection.define('users', {
         },
         orderCode: {
             type: DataTypes.STRING
+        },
+        count: {
+            type: DataTypes.INTEGER,
+            defaultValue: 0
         }
     },
     {

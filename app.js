@@ -325,6 +325,38 @@ app.post('/user/basket', (req, res) => {
     });
 });
 
+app.get('/user/bank/count', (req, res) => {
+    let userId = req.session.user;
+
+    user.getUserCount(userId).then(value => {
+        res.send(value.dataValues.count + '');
+    }).catch(error => {
+        console.log(error);
+    });
+});
+
+app.get('/user/bank/count/add', (req, res) => {
+    let userId = req.session.user;
+
+
+    user.getUserCount(userId).then(value1 => {
+        let sum = Number(req.query.sum) + value1.dataValues.count;
+        user.userCountAdd(userId, sum).then(value => {
+            user.getUserCount(userId).then(value => {
+                res.send({count: value.dataValues.count, status: true});
+            }).catch(error => {
+                res.send({status: false});
+            });
+        }).catch(error => {
+            res.send({status: false});
+        });
+    }).catch(error => {
+        res.send({status: false});
+    });
+
+
+});
+
 
 app.get('/snapshot/:id', (req, res) => {
     res.send(RESPONSE_TO_CLIENT);

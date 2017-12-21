@@ -64,5 +64,18 @@ User.prototype.getUser = function (userId) {
     return User.findById(userId);
 };
 
+User.prototype.getUserCount = function (userId) {
+    return User.findById(userId, {
+        attributes: ['count'],
+    });
+};
+
+User.prototype.userCountAdd = function (userId, sum) {
+    return User.update(
+        {count: sum},
+        {where: {id: userId}}
+    );
+};
+
 
 module.exports = User;
