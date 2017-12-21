@@ -312,9 +312,12 @@ app.post('/user/basket', (req, res) => {
                 data: 'No such element'
             });
         } else {
-            basketQueue.doResponseElement(req.query.queueId, {
-                status: 'success',
-                data: value
+            user.getUserCount(req.session.user).then(value2 => {
+                basketQueue.doResponseElement(req.query.queueId, {
+                    status: 'success',
+                    data: value,
+                    count: value2
+                });
             });
         }
     }).catch(error => {
