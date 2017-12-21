@@ -105,9 +105,12 @@ app.get('/product/:id', (req, res) => {
                 data: 'No such element'
             });
         } else {
-            elementQueues.doResponseElement(req.query.queueId, {
-                status: 'success',
-                data: value
+            user.getUserCount(req.session.user).then(value2 => {
+                elementQueues.doResponseElement(req.query.queueId, {
+                    status: 'success',
+                    data: value,
+                    count: value2
+                });
             });
         }
     }).catch(error => {
