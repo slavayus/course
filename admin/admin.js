@@ -289,7 +289,7 @@ router.post('/product/image/max', (req, res) => {
 
 router.get('/isAdmin', (req, res) => {
     const userId = req.session.user;
-    if (userId !== undefined) {
+    if (userId !== undefined && userId !== null) {
         user.isThisAdmin(userId).then(value => {
             if (value.dataValues.isAdmin) {
                 res.send("Yes");

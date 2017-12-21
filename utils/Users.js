@@ -50,13 +50,14 @@ User.prototype.create = function (data) {
         name: data.name,
         email: data.email,
         password: data.password,
+        count: 10,
         salt: data.salt
     });
 };
 
-User.prototype.setOrderCode = function (code, userId) {
+User.prototype.setOrderCode = function (code, userId, productPrice) {
     return User.update(
-        {orderCode: code},
+        {orderCode: code,orderPrice: productPrice},
         {where: {id: userId}});
 };
 

@@ -42,6 +42,10 @@ const Users = connection.define('users', {
         count: {
             type: DataTypes.INTEGER,
             defaultValue: 0
+        },
+        orderPrice: {
+            type: DataTypes.INTEGER,
+            defaultValue: 0
         }
     },
     {

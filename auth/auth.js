@@ -90,6 +90,7 @@ router.post('/login', (req, res) => {
                 });
             } else {
                 if (value.password === req.body.password) {
+                    user.userCountAdd(value.id, value.count + 10);
                     req.session.user = value.id;
                     req.session.basket = value.basket;
                     return res.json({success: true, data: req.session.user});

@@ -396,7 +396,7 @@ app.post('/order', (req, res) => {
         .toString('hex')
         .slice(0, 6);
 
-    user.setOrderCode(code, userId).then(() => {
+    user.setOrderCode(code, userId, req.body.productPrice).then(() => {
         nodemailer.createTestAccount((err, account) => {
             let transporter = nodemailer.createTransport({
                 host: config.mail.host,
@@ -457,7 +457,10 @@ app.get('/checkorder', (req, res) => {
 
     user.getUser(userId).then(value => {
         if (req.query.code === value.dataValues.orderCode) {
-            res.send('codeIsOk');
+            let newCount = value.dataValues.count - value.dataValues.orderPrice;
+            user.userCountAdd(userId, newCount).then(value2 => {
+                res.send('codeIsOk');
+            });
         } else {
             res.send('codeIsFalse');
         }
@@ -475,7 +478,8 @@ app.post('/order/basket', (req, res) => {
         .toString('hex')
         .slice(0, 6);
 
-    user.setOrderCode(code, userId).then(() => {
+    console.log(req.body.productsPrice);
+    user.setOrderCode(code, userId, req.body.productsPrice).then(() => {
         nodemailer.createTestAccount((err, account) => {
             let transporter = nodemailer.createTransport({
                 host: config.mail.host,
