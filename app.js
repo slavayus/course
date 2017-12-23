@@ -435,10 +435,9 @@ app.post('/order', (req, res) => {
                 description: value.description,
                 date_post: value.date_post,
                 price: value.price,
-                type: value.type,
-                posted: new Date().getTime()
+                type: value.type
             }).then(value => {
-                order.create(value.dataValues.id, userId).then(() => {
+                order.create(value.dataValues.id, userId, code).then(() => {
                     console.log('Ваш заказ принят.\nНаш администратор свяжется с вами в ближайщее время.')
                 }).catch(error => {
                     res.send(`Не удалось оформить заказ.\nКод ошибки: \n${error.name}`);
@@ -458,20 +457,24 @@ app.get('/checkorder', (req, res) => {
 
     user.getUser(userId).then(value => {
         if (req.query.code === value.dataValues.orderCode) {
-            let newCount = value.dataValues.count - value.dataValues.orderPrice;
-            user.userCountAdd(userId, newCount).then(value2 => {
-                res.send('codeIsOk');
-            });
+            order.confirmProducts(value.dataValues.id, req.query.code).then(value2 => {
+                let newCount = value.dataValues.count - value.dataValues.orderPrice;
+                user.userCountAdd(userId, newCount).then(value3 => {
+                    res.send('codeIsOk');
+                })
+            }).catch(reason => {
+                console.log(reason.name);
+            })
         } else {
             res.send('codeIsFalse');
         }
     }).catch(error => {
-        console.log(`Не удалось оформить заказ.\nКод ошибки: \n${error.name}`);
+        console.log(`Не удалось оформить заказ.\nКод ошибки: \n${error}`);
     })
 });
 
 app.post('/order/confirm', (req, res) => {
-    productSnapshot.confirmOrder(req.body.id).then(value => {
+    order.setDelivered(req.body.id).then(value => {
         res.send('sucess')
     }).catch(reason => {
         res.send('fail');
@@ -530,7 +533,7 @@ app.post('/order/basket', (req, res) => {
                     price: value.price,
                     type: value.type
                 }).then(value2 => {
-                    order.create(value2.dataValues.id, userId).then(() => {
+                    order.create(value2.dataValues.id, userId, code).then(() => {
                         console.log(`Ваш заказ на товар №${value.id} принят.`)
                     }).catch(error => {
                         console.log(`Не удалось оформить заказ на товар №${value.id}.\nКод ошибки: \n${error.name}`);

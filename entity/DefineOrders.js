@@ -37,6 +37,21 @@ const Orders = connection.define('orders', {
             },
             onDelete: 'CASCADE',
             allowNull: false
+        },
+        confirmed: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
+        },
+        orderCode: {
+            type: DataTypes.STRING
+        },
+        posted: {
+            type: DataTypes.BIGINT,
+            defaultValue: new Date().getTime()
+        },
+        delivered: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
         }
     },
     {

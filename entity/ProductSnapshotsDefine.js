@@ -45,14 +45,6 @@ const ProductSnapshots = connection.define('products_snapshots', {
         type: {
             type: DataTypes.STRING,
             allowNull: false
-        },
-        posted: {
-            type: DataTypes.BIGINT,
-            defaultValue: new Date().getTime()
-        },
-        delivered: {
-            type: DataTypes.BOOLEAN,
-            defaultValue: false
         }
     },
     {
