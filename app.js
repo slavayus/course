@@ -435,7 +435,8 @@ app.post('/order', (req, res) => {
                 description: value.description,
                 date_post: value.date_post,
                 price: value.price,
-                type: value.type
+                type: value.type,
+                posted: new Date().getTime()
             }).then(value => {
                 order.create(value.dataValues.id, userId).then(() => {
                     console.log('Ваш заказ принят.\nНаш администратор свяжется с вами в ближайщее время.')
@@ -467,6 +468,14 @@ app.get('/checkorder', (req, res) => {
     }).catch(error => {
         console.log(`Не удалось оформить заказ.\nКод ошибки: \n${error.name}`);
     })
+});
+
+app.post('/order/confirm', (req, res) => {
+    productSnapshot.confirmOrder(req.body.id).then(value => {
+        res.send('sucess')
+    }).catch(reason => {
+        res.send('fail');
+    });
 });
 
 app.post('/order/basket', (req, res) => {
